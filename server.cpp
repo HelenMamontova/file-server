@@ -6,17 +6,13 @@
 #include <arpa/inet.h>
 
 void reference();
-void getAddress(const std::string& address, std::string& ip_address, std::string& port);
-int setAddress(std::string& ip_address, std::string& port, struct sockaddr_in* local);
+int setAddress(std::string& address, struct sockaddr_in* local);
 
 int main(int argc, char* argv[])
 {
     std::string version = "1.0";
     std::string address;
     std::string path;
-
-    std::string ip_address;
-    std::string port;
 
     struct sockaddr_in local;
 
@@ -63,8 +59,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    getAddress(address, ip_address, port);
-    setAddress(ip_address, port, &local);
+    setAddress(address, &local);
 
     return 0;
 }
@@ -80,21 +75,22 @@ void reference()
     std::cout << "--help, -h - show this text.\n";
 }
 
-void getAddress(const std::string& address, std::string& ip_address, std::string& port)
+int setAddress(std::string& address, struct sockaddr_in* local)
 {
+    std::string ip_address;
+    std::string port;
+
     size_t pos = address.find(":");
     if (pos != std::string::npos)
     {
         ip_address = address.substr(0, pos);
         port = address.substr(pos + 1, address.length() - pos - 1);
     }
-}
-
-
-int setAddress(std::string& ip_address, std::string& port, struct sockaddr_in* local)
-{
-    char* endptr;
-    short port_num;
+    else
+    {
+        std::cerr << address << " - incorrect address\n";
+        return 1;
+    }
 
     bzero(local, sizeof (*local));
     local->sin_family = AF_INET;
@@ -105,11 +101,16 @@ int setAddress(std::string& ip_address, std::string& port, struct sockaddr_in* l
         return 1;
     }
 
-    port_num = strtol(port.c_str(), &endptr, 0);
+    char* endptr;
+    short port_num = strtol(port.c_str(), &endptr, 0);
     if (*endptr == '\0')
+    {
         local->sin_port = htons(port_num);
+    }
     else
+    {
         std::cerr << port << " - unknown port\n";
-
+        return 1;
+    }
     return 0;
 }
