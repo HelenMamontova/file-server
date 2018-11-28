@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstring>
 #include <string>
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -13,8 +14,6 @@ int main(int argc, char* argv[])
     std::string version = "1.0";
     std::string address;
     std::string path;
-
-    struct sockaddr_in local;
 
     if (argc < 2)
     {
@@ -59,7 +58,42 @@ int main(int argc, char* argv[])
         }
     }
 
+    int s = socket(AF_INET, SOCK_STREAM, 0);
+    if (s < 0)
+    {
+        std::cerr << "socket call error\n";
+        return 1;
+    }
+
+    struct sockaddr_in local;
+    struct sockaddr_in peer;
+
     setAddress(address, &local);
+
+    socklen_t locallen = sizeof(local);
+    if (bind(s, (struct sockaddr*) &local, locallen))
+    {
+        std::cerr << "bind call error\n";
+        return 1;
+    }
+
+    if (listen(s, 5))
+    {
+        std::cerr << "listen call error\n";
+        return 1;
+    }
+
+    do
+    {
+        int peerlen = sizeof(peer);
+        int s1 = accept(s, (struct sockaddr*) &peer, (socklen_t*) &peerlen);
+        if (s1 < 0)
+        {
+            std::cerr << "accept call error\n";
+            return 1;
+        }
+    }
+    while (1);
 
     return 0;
 }
