@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <errno.h>
 
 void reference();
 int setAddress(std::string& address, struct sockaddr_in* local);
@@ -61,7 +62,7 @@ int main(int argc, char* argv[])
     int s = socket(AF_INET, SOCK_STREAM, 0);
     if (s < 0)
     {
-        std::cerr << "socket call error\n";
+        std::cerr << "Socket call error. " << strerror(errno) << "\n";
         return 1;
     }
 
@@ -73,13 +74,13 @@ int main(int argc, char* argv[])
     socklen_t locallen = sizeof(local);
     if (bind(s, (struct sockaddr*) &local, locallen))
     {
-        std::cerr << "bind call error\n";
+        std::cerr << "Bind call error. " << strerror(errno) << "\n";
         return 1;
     }
 
     if (listen(s, 5))
     {
-        std::cerr << "listen call error\n";
+        std::cerr << "Listen call error. " << strerror(errno) << "\n";
         return 1;
     }
 
@@ -89,7 +90,7 @@ int main(int argc, char* argv[])
         int s1 = accept(s, (struct sockaddr*) &peer, (socklen_t*) &peerlen);
         if (s1 < 0)
         {
-            std::cerr << "accept call error\n";
+            std::cerr << "Accept call error. " << strerror(errno) << "\n";
             return 1;
         }
     }
