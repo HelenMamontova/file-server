@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
             file_name = argv[++i];
             command = "put";
         }
-       else if ((!strcmp(argv[i], "-l") || !strcmp(argv[i], "--list")))
+        else if ((!strcmp(argv[i], "-l") || !strcmp(argv[i], "--list")))
         {
             command = "list";
         }
