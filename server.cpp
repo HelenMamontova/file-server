@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    do
+    while (1)
     {
         int peerlen = sizeof(peer);
         int s1 = accept(s, (struct sockaddr*) &peer, (socklen_t*) &peerlen);
@@ -94,7 +94,6 @@ int main(int argc, char* argv[])
             return 1;
         }
     }
-    while (1);
 
     return 0;
 }
