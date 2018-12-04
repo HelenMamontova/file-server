@@ -8,7 +8,7 @@
 #include <errno.h>
 
 void reference();
-int setAddress(std::string& address, struct sockaddr_in* local);
+bool setAddress(std::string& address, struct sockaddr_in* local);
 
 int main(int argc, char* argv[])
 {
@@ -110,7 +110,7 @@ void reference()
     std::cout << "--help, -h - show this text.\n";
 }
 
-int setAddress(std::string& address, struct sockaddr_in* local)
+bool setAddress(std::string& address, struct sockaddr_in* local)
 {
     std::string ip_address;
     std::string port;
@@ -124,7 +124,7 @@ int setAddress(std::string& address, struct sockaddr_in* local)
     else
     {
         std::cerr << address << " - incorrect address\n";
-        return 1;
+        return false;
     }
 
     bzero(local, sizeof (*local));
@@ -133,7 +133,7 @@ int setAddress(std::string& address, struct sockaddr_in* local)
     if (!inet_aton(ip_address.c_str(), &local->sin_addr))
     {
         std::cerr << ip_address << " - unknown host\n";
-        return 1;
+        return false;
     }
 
     char* endptr;
@@ -145,7 +145,7 @@ int setAddress(std::string& address, struct sockaddr_in* local)
     else
     {
         std::cerr << port << " - unknown port\n";
-        return 1;
+        return false;
     }
-    return 0;
+    return true;
 }
