@@ -67,7 +67,6 @@ int main(int argc, char* argv[])
     }
 
     struct sockaddr_in local;
-    struct sockaddr_in peer;
 
     setAddress(address, &local);
 
@@ -86,6 +85,7 @@ int main(int argc, char* argv[])
 
     while (1)
     {
+        struct sockaddr_in peer;
         int peerlen = sizeof(peer);
         int s1 = accept(s, (struct sockaddr*) &peer, (socklen_t*) &peerlen);
         if (s1 < 0)
