@@ -68,7 +68,11 @@ int main(int argc, char* argv[])
 
     struct sockaddr_in local;
 
-    setAddress(address, &local);
+    if (!setAddress(address, &local))
+    {
+        std::cerr << "Address error.\n";
+        return 1;
+    }
 
     socklen_t locallen = sizeof(local);
     if (bind(s, (struct sockaddr*) &local, locallen))
