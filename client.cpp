@@ -4,7 +4,18 @@
 #include <sys/socket.h>
 #include <errno.h>
 
-void reference();
+void reference()
+{
+    std::cout << "Usage:\n";
+    std::cout << "client -a/--address <ip_address:port> -g/--get <name> -p/--put <name> -l/--list [-v/--version] [-h/--help]\n\n";
+
+    std::cout << "--address, -a <ip_address:port> - specifies local IP address and port of server;\n";
+    std::cout << "--get, -g <name> - specified the file name to get from server;\n";
+    std::cout << "--put, -p <name> - specified the file name to write to the server;\n";
+    std::cout << "--list, -l - gets file list from server;\n";
+    std::cout << "--version, -v - server version;\n";
+    std::cout << "--help, -h - show this text.\n";
+}
 
 int main(int argc, char* argv[])
 {
@@ -78,17 +89,4 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-}
-
-void reference()
-{
-    std::cout << "Usage:\n";
-    std::cout << "client -a/--address <ip_address:port> -g/--get <name> -p/--put <name> -l/--list [-v/--version] [-h/--help]\n\n";
-
-    std::cout << "--address, -a <ip_address:port> - specifies local IP address and port of server;\n";
-    std::cout << "--get, -g <name> - specified the file name to get from server;\n";
-    std::cout << "--put, -p <name> - specified the file name to write to the server;\n";
-    std::cout << "--list, -l - gets file list from server;\n";
-    std::cout << "--version, -v - server version;\n";
-    std::cout << "--help, -h - show this text.\n";
 }
