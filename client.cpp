@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cstring>
 #include <string>
+#include <sys/socket.h>
+#include <errno.h>
 
 void reference();
 
@@ -68,6 +70,14 @@ int main(int argc, char* argv[])
             return 1;
         }
     }
+
+    int s = socket(AF_INET, SOCK_STREAM, 0);
+    if (s < 0)
+    {
+        std::cerr << "Socket call error. " << strerror(errno) << "\n";
+        return 1;
+    }
+
 }
 
 void reference()
