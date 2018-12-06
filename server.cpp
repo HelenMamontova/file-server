@@ -4,11 +4,20 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
 #include <errno.h>
 
-void reference();
-bool setAddress(std::string& address, struct sockaddr_in* local);
+#include "setaddress.h"
+
+void reference()
+{
+    std::cout << "Usage:\n";
+    std::cout << "server -b/--bind <ip_address:port> -d/--dir <path> [-v/--version] [-h/--help]\n\n";
+
+    std::cout << "--bind, -b <ip_address:port> - specifies local IP address and port where the server will work;\n";
+    std::cout << "--dir, -d <path> - specified the working directory for files on the server;\n";
+    std::cout << "--version, -v - server version;\n";
+    std::cout << "--help, -h - show this text.\n";
+}
 
 int main(int argc, char* argv[])
 {
@@ -100,55 +109,4 @@ int main(int argc, char* argv[])
     }
 
     return 0;
-}
-
-void reference()
-{
-    std::cout << "Usage:\n";
-    std::cout << "server -b/--bind <ip_address:port> -d/--dir <path> [-v/--version] [-h/--help]\n\n";
-
-    std::cout << "--bind, -b <ip_address:port> - specifies local IP address and port where the server will work;\n";
-    std::cout << "--dir, -d <path> - specified the working directory for files on the server;\n";
-    std::cout << "--version, -v - server version;\n";
-    std::cout << "--help, -h - show this text.\n";
-}
-
-bool setAddress(std::string& address, struct sockaddr_in* local)
-{
-    std::string ip_address;
-    std::string port;
-
-    size_t pos = address.find(":");
-    if (pos != std::string::npos)
-    {
-        ip_address = address.substr(0, pos);
-        port = address.substr(pos + 1, address.length() - pos - 1);
-    }
-    else
-    {
-        std::cerr << address << " - incorrect address\n";
-        return false;
-    }
-
-    bzero(local, sizeof (*local));
-    local->sin_family = AF_INET;
-
-    if (!inet_aton(ip_address.c_str(), &local->sin_addr))
-    {
-        std::cerr << ip_address << " - unknown host\n";
-        return false;
-    }
-
-    char* endptr;
-    short port_num = strtol(port.c_str(), &endptr, 0);
-    if (*endptr == '\0')
-    {
-        local->sin_port = htons(port_num);
-    }
-    else
-    {
-        std::cerr << port << " - unknown port\n";
-        return false;
-    }
-    return true;
 }
