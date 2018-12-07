@@ -1,8 +1,12 @@
 #include <iostream>
 #include <cstring>
 #include <string>
-#include <sys/socket.h>
+#include <sys/types.h> //socket, connect
+#include <sys/socket.h> //socket, connect
+#include <netinet/in.h> //struct sockaddr_in
 #include <errno.h>
+
+#include "setaddress.h"
 
 void reference()
 {
@@ -86,6 +90,21 @@ int main(int argc, char* argv[])
     if (s < 0)
     {
         std::cerr << "Socket call error. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+    struct sockaddr_in peer;
+
+    if (!setAddress(server_address, &peer))
+    {
+        std::cerr << "Address error.\n";
+        return 1;
+    }
+
+    socklen_t peerlen = sizeof(peer);
+    if (connect(s, (struct sockaddr*) &peer, peerlen))
+    {
+        std::cerr << "Connect call error. " << strerror(errno) << "\n";
         return 1;
     }
 
