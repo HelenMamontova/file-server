@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cstring>
 #include <string>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#include <netinet/in.h> //struct sockaddr_in
+#include <arpa/inet.h> //inet_aton
 
 bool setAddress(std::string& address, struct sockaddr_in* local)
 {
