@@ -1,9 +1,9 @@
 #include <iostream>
 #include <cstring>
 #include <string>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
+#include <sys/types.h> //socket, bind
+#include <sys/socket.h> //socket, bind, accept, listen
+#include <netinet/in.h> //struct sockaddr_in
 #include <errno.h>
 
 #include "setaddress.h"
