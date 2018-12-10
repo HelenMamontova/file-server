@@ -4,7 +4,9 @@
 #include <netinet/in.h> //struct sockaddr_in
 #include <arpa/inet.h> //inet_aton
 
-bool setAddress(std::string& address, struct sockaddr_in* local)
+#include "setaddress.h"
+
+bool setAddress(const std::string& address, struct sockaddr_in* local)
 {
     std::string ip_address;
     std::string port;
