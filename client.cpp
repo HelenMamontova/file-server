@@ -13,9 +13,9 @@ void reference()
     std::cout << "Usage:\n";
     std::cout << "client -a/--address <ip_address:port> -g/--get <name> -p/--put <name> -l/--list [-v/--version] [-h/--help]\n\n";
 
-    std::cout << "--address, -a <ip_address:port> - specifies local IP address and port of server;\n";
-    std::cout << "--get, -g <name> - specified the file name to get from server;\n";
-    std::cout << "--put, -p <name> - specified the file name to write to the server;\n";
+    std::cout << "--address, -a <ip_address:port> - specifies IP address and port of server;\n";
+    std::cout << "--get, -g <name> - specifies the file name to get from server;\n";
+    std::cout << "--put, -p <name> - specifies the file name to write to the server;\n";
     std::cout << "--list, -l - gets file list from server;\n";
     std::cout << "--version, -v - server version;\n";
     std::cout << "--help, -h - show this text.\n";
@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
         {
             if (i + 1 == argc)
             {
-                std::cerr << argv[i] << " needs and argument - a file name get.\n";
+                std::cerr << argv[i] << " needs and argument - a file to get.\n";
                 return 1;
             }
             file_name = argv[++i];
@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
         {
             if (i + 1 == argc)
             {
-                std::cerr << argv[i] << " needs and argument - a file name put.\n";
+                std::cerr << argv[i] << " needs and argument - a file to put.\n";
                 return 1;
             }
             file_name = argv[++i];
@@ -101,8 +101,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    socklen_t peerlen = sizeof(peer);
-    if (connect(s, (struct sockaddr*) &peer, peerlen))
+    if (connect(s, (struct sockaddr*) &peer, sizeof(peer)))
     {
         std::cerr << "Connect call error. " << strerror(errno) << "\n";
         return 1;
