@@ -5,7 +5,7 @@
 #include <sys/socket.h> //socket, bind, accept, listen
 #include <netinet/in.h> //struct sockaddr_in
 #include <errno.h>
-#include <unistd.h>
+#include <unistd.h> //close
 
 #include "setaddress.h"
 
@@ -84,8 +84,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    socklen_t locallen = sizeof(local);
-    if (bind(s, (struct sockaddr*) &local, locallen))
+    if (bind(s, (struct sockaddr*) &local, sizeof(local)))
     {
         std::cerr << "Bind call error. " << strerror(errno) << "\n";
         return 1;
@@ -97,8 +96,6 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    close(s);
-
     while (true)
     {
         struct sockaddr_in peer;
@@ -109,6 +106,8 @@ int main(int argc, char* argv[])
             std::cerr << "Accept call error. " << strerror(errno) << "\n";
             return 1;
         }
+
+        close(s1);
     }
 
     return 0;
