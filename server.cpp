@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
 
     if (!setAddress(address, &local))
     {
-        std::cerr << "Address error.\n";
+        std::cout << "Address error.\n";
         return 1;
     }
 
