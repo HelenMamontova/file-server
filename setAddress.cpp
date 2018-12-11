@@ -34,7 +34,7 @@ bool setAddress(const std::string& address, struct sockaddr_in* local)
     }
 
     char* endptr;
-    short port_num = strtol(port.c_str(), &endptr, 0);
+    short port_num = strtol(port.c_str(), &endptr, 10);
     if (*endptr != '\0')
     {
         std::cerr << port << " - unknown port\n";
