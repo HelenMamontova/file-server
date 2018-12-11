@@ -5,6 +5,7 @@
 #include <sys/socket.h> //socket, bind, accept, listen
 #include <netinet/in.h> //struct sockaddr_in
 #include <errno.h>
+#include <unistd.h>
 
 #include "setaddress.h"
 
@@ -14,7 +15,7 @@ void reference()
     std::cout << "server -b/--bind <ip_address:port> -d/--dir <path> [-v/--version] [-h/--help]\n\n";
 
     std::cout << "--bind, -b <ip_address:port> - specifies local IP address and port where the server will work;\n";
-    std::cout << "--dir, -d <path> - specified the working directory for files on the server;\n";
+    std::cout << "--dir, -d <path> - specifies the working directory for files on the server;\n";
     std::cout << "--version, -v - server version;\n";
     std::cout << "--help, -h - show this text.\n";
 }
@@ -95,6 +96,8 @@ int main(int argc, char* argv[])
         std::cerr << "Listen call error. " << strerror(errno) << "\n";
         return 1;
     }
+
+    close(s);
 
     while (true)
     {
