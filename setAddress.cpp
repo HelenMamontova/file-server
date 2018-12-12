@@ -2,7 +2,6 @@
 #include <cstring>
 #include <string>
 #include <stdlib.h> //exit
-#include <netinet/in.h> //struct sockaddr_in
 #include <arpa/inet.h> //inet_aton
 
 #include "setaddress.h"
@@ -18,11 +17,8 @@ bool setAddress(const std::string& address, struct sockaddr_in* local)
         std::cerr << address << " - incorrect address\n";
         return false;
     }
-    else
-    {
-        ip_address = address.substr(0, pos);
-        port = address.substr(pos + 1, address.length() - pos - 1);
-    }
+    ip_address = address.substr(0, pos);
+    port = address.substr(pos + 1, address.length() - pos - 1);
 
     bzero(local, sizeof (*local));
     local->sin_family = AF_INET;
@@ -40,9 +36,7 @@ bool setAddress(const std::string& address, struct sockaddr_in* local)
         std::cerr << port << " - unknown port\n";
         return false;
     }
-    else
-    {
-        local->sin_port = htons(port_num);
-    }
+    local->sin_port = htons(port_num);
+
     return true;
 }
