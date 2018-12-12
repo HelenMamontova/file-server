@@ -1,8 +1,8 @@
-#include <string>
-#include <netinet/in.h>
-
 #ifndef SETADDRESS_H
 #define SETADDRESS_H
+
+#include <string>
+#include <netinet/in.h> //struct sockaddr_in
 
 bool setAddress(const std::string& address, struct sockaddr_in* local);
 
