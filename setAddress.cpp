@@ -8,17 +8,14 @@
 
 bool setAddress(const std::string& address, struct sockaddr_in* local)
 {
-    std::string ip_address;
-    std::string port;
-
     size_t pos = address.find(":");
     if (!(pos != std::string::npos))
     {
         std::cerr << address << " - incorrect address\n";
         return false;
     }
-    ip_address = address.substr(0, pos);
-    port = address.substr(pos + 1, address.length() - pos - 1);
+    std::string ip_address = address.substr(0, pos);
+    std::string port = address.substr(pos + 1, address.length() - pos - 1);
 
     bzero(local, sizeof (*local));
     local->sin_family = AF_INET;
