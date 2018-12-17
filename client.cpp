@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstring>
 #include <string>
+#include <cstdint> //uint8_t, uint32_t
 #include <sys/types.h> //socket, connect
 #include <sys/socket.h> //socket, connect
 #include <netinet/in.h> //struct sockaddr_in
@@ -107,5 +108,27 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    if (command == "get")
+    {
+        uint8_t com = 0;
+        if (send(s, &com, 1, 0) < 0)
+        {
+            std::cerr << "Send call error. " << strerror(errno) << "\n";
+            return 1;
+        }
+
+        uint32_t file_name_len = file_name.length();
+        if (send(s, &file_name_len, 4, 0) < 0)
+        {
+            std::cerr << "Send call error. " << strerror(errno) << "\n";
+            return 1;
+        }
+
+        if (send(s, file_name.c_str(), file_name.length(), 0) < 0)
+        {
+            std::cerr << "Send call error. " << strerror(errno) << "\n";
+            return 1;
+        }
+    }
     return 0;
 }
