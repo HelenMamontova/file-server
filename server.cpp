@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstring>
 #include <string>
+#include <cstdint> //uint8_t, uint32_t
 #include <sys/types.h> //socket, bind
 #include <sys/socket.h> //socket, bind, accept, listen
 #include <netinet/in.h> //struct sockaddr_in
@@ -107,6 +108,29 @@ int main(int argc, char* argv[])
             return 1;
         }
 
+        uint8_t com;
+        if (recv(s1, &com, 1, 0) < 0)
+        {
+            std::cerr << "Recv call error command. " << strerror(errno) << "\n";
+            return 1;
+        }
+
+        uint32_t file_name_len;
+        if (recv(s1, &file_name_len, 4, 0) < 0)
+        {
+            std::cerr << "Recv call error file name length. " << strerror(errno) << "\n";
+            return 1;
+        }
+
+        char* file_name = new char[file_name_len];
+        if (recv(s1, file_name, strlen(file_name), 0) < 0)
+        {
+            std::cerr << "Recv call error file name. " << strerror(errno) << "\n";
+            return 1;
+        }
+        std::string name(file_name);
+
+        delete [] file_name;
         close(s1);
     }
 
