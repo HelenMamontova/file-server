@@ -109,21 +109,24 @@ int main(int argc, char* argv[])
         }
 
         uint8_t com;
-        if (recv(s1, &com, 1, 0) < 0)
+        int rec_com =recv(s1, &com, sizeof(com), 0);
+        if (rec_com < 0 || rec_com != sizeof(com))
         {
             std::cerr << "Recv call error command. " << strerror(errno) << "\n";
             return 1;
         }
 
         uint32_t file_name_len;
-        if (recv(s1, &file_name_len, 4, 0) < 0)
+        int rec_file_name_len = recv(s1, &file_name_len, sizeof(file_name_len), 0);
+        if (rec_file_name_len < 0 || rec_file_name_len != sizeof(file_name_len))
         {
             std::cerr << "Recv call error file name length. " << strerror(errno) << "\n";
             return 1;
         }
 
         char* file_name = new char[file_name_len];
-        if (recv(s1, file_name, strlen(file_name), 0) < 0)
+        int rec_file_name = recv(s1, file_name, file_name_len, 0);
+        if (rec_file_name < 0 || rec_file_name != (int)file_name_len)
         {
             std::cerr << "Recv call error file name. " << strerror(errno) << "\n";
             return 1;
