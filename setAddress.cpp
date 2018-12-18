@@ -1,7 +1,5 @@
 #include <iostream>
 #include <cstring>
-#include <string>
-#include <stdlib.h> //exit
 #include <arpa/inet.h> //inet_aton
 
 #include "setaddress.h"
