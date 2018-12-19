@@ -111,14 +111,14 @@ int main(int argc, char* argv[])
     if (command == "get")
     {
         uint8_t com = 0;
-        if (send(s, &com, 1, 0) < 0)
+        if (send(s, &com, sizeof(com), 0) < 0)
         {
             std::cerr << "Send call error. " << strerror(errno) << "\n";
             return 1;
         }
 
         uint32_t file_name_len = file_name.length();
-        if (send(s, &file_name_len, 4, 0) < 0)
+        if (send(s, &file_name_len, sizeof(file_name_len), 0) < 0)
         {
             std::cerr << "Send call error. " << strerror(errno) << "\n";
             return 1;
