@@ -133,22 +133,26 @@ int main(int argc, char* argv[])
             return 1;
         }
         std::string name(file_name);
+std::cout << "Path " << path << "\n";
+std::cout << "File name " << name << "\n";
+std::string path_file = path + "/" + name;
+std::cout << "Path to file " << path_file << "\n";
 
-    char buff[1024];
-    std::ifstream fin(path + "/" + name);
-    if (!fin)
-    {
-        std::cerr << name << "File not open.\n";
-        return 1;
-    }
-    while (!fin.eof())
-    {
-        fin.read(buff, 1024);
+        char buff[1024];
+        std::ifstream fin(path + "/" + name);
+        if (!fin)
+        {
+            std::cerr << name << "File not open.\n";
+            return 1;
+        }
+        while (!fin.eof())
+        {
+            fin.read(buff, 1024);
 
-    }
+        }
 
-        delete [] file_name;
-        close(s1);
+            delete [] file_name;
+            close(s1);
     }
 
 
