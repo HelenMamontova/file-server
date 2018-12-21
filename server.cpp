@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <cstring>
 #include <string>
 #include <cstdint> //uint8_t, uint32_t
@@ -133,9 +134,23 @@ int main(int argc, char* argv[])
         }
         std::string name(file_name);
 
+    char buff[1024];
+    std::ifstream fin(path + "/" + name);
+    if (!fin)
+    {
+        std::cerr << name << "File not open.\n";
+        return 1;
+    }
+    while (!fin.eof())
+    {
+        fin.read(buff, 1024);
+
+    }
+
         delete [] file_name;
         close(s1);
     }
+
 
     return 0;
 }
