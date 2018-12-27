@@ -3,6 +3,7 @@
 #include <cstring>
 #include <string>
 #include <cstdint> //uint8_t, uint32_t
+#include <sys/stat.h> //stat, struct stat
 #include <sys/types.h> //socket, bind
 #include <sys/socket.h> //socket, bind, accept, listen
 #include <netinet/in.h> //struct sockaddr_in
@@ -118,13 +119,14 @@ int main(int argc, char* argv[])
         }
 
         uint32_t file_name_len;
-        int rec_file_name_len = recv(s1, &file_name_len, sizeof(file_name_len), 0);
-        if (rec_file_name_len < 0 || rec_file_name_len != sizeof(file_name_len))
+        int res = recv(s1, &file_name_len, sizeof(file_name_len), 0);
+        if (res < 0 || res != sizeof(file_name_len))
         {
             std::cerr << "Recv call error file name length. " << strerror(errno) << "\n";
             return 1;
         }
 
+// получение сервером имени файла
         char* file_name = new char[file_name_len];
         int rec_file_name = recv(s1, file_name, file_name_len, 0);
         if (rec_file_name < 0 || rec_file_name != (int)file_name_len)
@@ -133,28 +135,64 @@ int main(int argc, char* argv[])
             return 1;
         }
         std::string name(file_name);
-std::cout << "Path " << path << "\n";
-std::cout << "File name " << name << "\n";
-std::string path_file = path + "/" + name;
-std::cout << "Path to file " << path_file << "\n";
+        delete [] file_name;
 
-        char buff[1024];
-        std::ifstream fin(path + "/" + name);
+        std::string path_file = path + "/" + name;
+
+//открытие сервером файла
+        std::ifstream fin(path_file);
         if (!fin)
         {
             std::cerr << name << "File not open.\n";
             return 1;
         }
+
+//отправка клиенту кода команды отправки файла
+        uint8_t command_send = 130;
+        int sen_com = send(s1, &command_send, sizeof(command_send), 0);
+        if (sen_com < 0 || sen_com != sizeof(command_send))
+        {
+            std::cerr << "Send call error. " << strerror(errno) << "\n";
+            return 1;
+        }
+
+// определение длины файла
+        struct stat st_buff;
+        int rc = stat(path_file.c_str(), &st_buff);
+        if (rc < 0)
+        {
+            std::cerr << "Stat call error. " << strerror(errno) << "\n";
+            return 1;
+        }
+
+//отправка клиенту длины файла
+        int sen_file_size = send(s1, path_file.c_str(), st_buff.st_size, 0);
+        if (sen_file_size < 0 || sen_file_size != (int)st_buff.st_size)
+        {
+            std::cerr << "Send call error file size. " << strerror(errno) << "\n";
+            return 1;
+        }
+
+// чтение файла в буфер
+        char buff[1024] = {0};
         while (!fin.eof())
         {
             fin.read(buff, 1024);
+            std::string file_buff(buff);
 
+// отправка содержимого буфера клиенту
+            if (fin.gcount() > 0)
+            {
+                int sen_file_buff_len = send(s1, &file_buff, fin.gcount(), 0);
+                if (sen_file_buff_len < 0 || sen_file_buff_len != (int)fin.gcount())
+                {
+                    std::cerr << "Send call error. " << strerror(errno) << "\n";
+                    return 1;
+                }
+            }
         }
-
-            delete [] file_name;
-            close(s1);
+        close(s1);
     }
-
 
     return 0;
 }
