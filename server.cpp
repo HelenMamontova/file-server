@@ -2,6 +2,7 @@
 #include <fstream>
 #include <cstring>
 #include <string>
+#include <vector>
 #include <cstdint> //uint8_t, uint32_t
 #include <sys/stat.h> //stat, struct stat
 #include <sys/types.h> //socket, bind
@@ -127,32 +128,26 @@ int main(int argc, char* argv[])
         }
 
 // получение сервером имени файла
-        char* file_name = new char[file_name_len];
-        int rec_file_name = recv(s1, file_name, file_name_len, 0);
+        std::vector <char> file_name(file_name_len);
+        int rec_file_name = recv(s1, file_name.data(), file_name_len, 0);
         if (rec_file_name < 0 || rec_file_name != (int)file_name_len)
         {
             std::cerr << "Recv call error file name. " << strerror(errno) << "\n";
             return 1;
         }
-        std::string name(file_name);
-        delete [] file_name;
+        std::string name(file_name.begin(), file_name.end());
 
         std::string path_file = path + "/" + name;
 
-//открытие сервером файла
-        std::ifstream fin(path_file);
-        if (!fin)
-        {
-            std::cerr << name << "File not open.\n";
-            return 1;
-        }
 
 //отправка клиенту кода команды отправки файла
-        uint8_t command_send = 130;
+        uint8_t command_send;
+        if (com == 0)
+            command_send = 130;
         int sen_com = send(s1, &command_send, sizeof(command_send), 0);
         if (sen_com < 0 || sen_com != sizeof(command_send))
         {
-            std::cerr << "Send call error. " << strerror(errno) << "\n";
+            std::cerr << "Send call error command. " << strerror(errno) << "\n";
             return 1;
         }
 
@@ -173,6 +168,14 @@ int main(int argc, char* argv[])
             return 1;
         }
 
+//открытие сервером файла
+        std::ifstream fin(path_file);
+        if (!fin)
+        {
+            std::cerr << name << "File not open.\n";
+            return 1;
+        }
+
 // чтение файла в буфер
         char buff[1024] = {0};
         while (!fin.eof())
@@ -186,7 +189,7 @@ int main(int argc, char* argv[])
                 int sen_file_buff_len = send(s1, &file_buff, fin.gcount(), 0);
                 if (sen_file_buff_len < 0 || sen_file_buff_len != (int)fin.gcount())
                 {
-                    std::cerr << "Send call error. " << strerror(errno) << "\n";
+                    std::cerr << "Send call error buff. " << strerror(errno) << "\n";
                     return 1;
                 }
             }
