@@ -144,8 +144,8 @@ int main(int argc, char* argv[])
         uint8_t command_send;
         if (com == 0)
             command_send = 130;
-        int sen_com = send(s1, &command_send, sizeof(command_send), 0);
-        if (sen_com < 0 || sen_com != sizeof(command_send))
+        res = send(s1, &command_send, sizeof(command_send), 0);
+        if (res < 0 || res != sizeof(command_send))
         {
             std::cerr << "Send call error command. " << strerror(errno) << "\n";
             return 1;
@@ -161,8 +161,8 @@ int main(int argc, char* argv[])
         }
 
 //отправка клиенту длины файла
-        int sen_file_size = send(s1, &rc, sizeof(rc), 0);
-        if (sen_file_size < 0 || sen_file_size != sizeof(rc))
+        res = send(s1, &rc, sizeof(rc), 0);
+        if (res < 0 || res != sizeof(rc))
         {
             std::cerr << "Send call error file size. " << strerror(errno) << "\n";
             return 1;
@@ -181,13 +181,12 @@ int main(int argc, char* argv[])
         while (!fin.eof())
         {
             fin.read(buff, 1024);
-//            std::string file_buff(buff);
 
 // отправка содержимого буфера клиенту
             if (fin.gcount() > 0)
             {
-                int sen_file_buff_len = send(s1, buff, fin.gcount(), 0);
-                if (sen_file_buff_len < 0 || sen_file_buff_len != (int)fin.gcount())
+                res = send(s1, buff, fin.gcount(), 0);
+                if (res < 0 || res != (int)fin.gcount())
                 {
                     std::cerr << "Send call error buff. " << strerror(errno) << "\n";
                     return 1;
