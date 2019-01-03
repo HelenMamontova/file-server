@@ -161,8 +161,8 @@ int main(int argc, char* argv[])
         }
 
 //отправка клиенту длины файла
-        int sen_file_size = send(s1, path_file.c_str(), st_buff.st_size, 0);
-        if (sen_file_size < 0 || sen_file_size != (int)st_buff.st_size)
+        int sen_file_size = send(s1, &rc, sizeof(rc), 0);
+        if (sen_file_size < 0 || sen_file_size != sizeof(rc))
         {
             std::cerr << "Send call error file size. " << strerror(errno) << "\n";
             return 1;
