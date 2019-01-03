@@ -181,12 +181,12 @@ int main(int argc, char* argv[])
         while (!fin.eof())
         {
             fin.read(buff, 1024);
-            std::string file_buff(buff);
+//            std::string file_buff(buff);
 
 // отправка содержимого буфера клиенту
             if (fin.gcount() > 0)
             {
-                int sen_file_buff_len = send(s1, &file_buff, fin.gcount(), 0);
+                int sen_file_buff_len = send(s1, buff, fin.gcount(), 0);
                 if (sen_file_buff_len < 0 || sen_file_buff_len != (int)fin.gcount())
                 {
                     std::cerr << "Send call error buff. " << strerror(errno) << "\n";
