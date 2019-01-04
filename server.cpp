@@ -160,9 +160,11 @@ int main(int argc, char* argv[])
             return 1;
         }
 
+        uint32_t filesize = st_buff.st_size;
+
 //отправка клиенту длины файла
-        res = send(s1, &rc, sizeof(rc), 0);
-        if (res < 0 || res != sizeof(rc))
+        res = send(s1, &filesize, sizeof(filesize), 0);
+        if (res < 0 || res != sizeof(filesize))
         {
             std::cerr << "Send call error file size. " << strerror(errno) << "\n";
             return 1;
