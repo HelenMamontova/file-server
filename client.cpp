@@ -133,15 +133,23 @@ int main(int argc, char* argv[])
             return 1;
         }
 
-// получение кода команды отправки файла сервером 
+// получение кода команды отправки файла сервером
         uint8_t command_recv;
-        res =recv(s, &command_recv, sizeof(command_recv), 0);
+        res = recv(s, &command_recv, sizeof(command_recv), 0);
         if (res < 0 || res != sizeof(command_recv))
         {
             std::cerr << "Recv call error command. " << strerror(errno) << "\n";
             return 1;
         }
 
+// получение длины файла от сервера
+        uint32_t filesize;
+        res = recv(s, &filesize, sizeof(filesize), 0);
+        if (res < 0 || res != sizeof(filesize))
+        {
+            std::cerr << "Recv call error filesize. " << strerror(errno) << "\n";
+            return 1;
+        }
     }
     return 0;
 }
