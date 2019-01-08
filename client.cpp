@@ -132,6 +132,16 @@ int main(int argc, char* argv[])
             std::cerr << "Send call error. " << strerror(errno) << "\n";
             return 1;
         }
+
+// получение кода команды отправки файла сервером 
+        uint8_t command_recv;
+        res =recv(s, &command_recv, sizeof(command_recv), 0);
+        if (res < 0 || res != sizeof(command_recv))
+        {
+            std::cerr << "Recv call error command. " << strerror(errno) << "\n";
+            return 1;
+        }
+
     }
     return 0;
 }
