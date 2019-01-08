@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <cstring>
 #include <string>
 #include <cstdint> //uint8_t, uint32_t
@@ -148,6 +149,14 @@ int main(int argc, char* argv[])
         if (res < 0 || res != sizeof(filesize))
         {
             std::cerr << "Recv call error filesize. " << strerror(errno) << "\n";
+            return 1;
+        }
+
+//открытие файла для записи
+        std::ofstream fout(file_name);
+        if (!fout)
+        {
+            std::cerr << file_name << "File not open.\n";
             return 1;
         }
     }
