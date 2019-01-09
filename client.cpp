@@ -167,10 +167,10 @@ int main(int argc, char* argv[])
         }
 
 // получение содержимого буфера от сервера
-        char buff[1024] = {0};
         size_t bytes_recv = 0;
         for (size_t i = 1; i <= filesize; i++)
         {
+            char buff[1024] = {0};
             res = recv(s, buff, sizeof(buff), 0);
             bytes_recv += res;
             if (res < 0 || bytes_recv < filesize)
