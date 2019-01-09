@@ -195,6 +195,7 @@ int main(int argc, char* argv[])
                 }
             }
         }
+        fin.close();
         close(s1);
     }
 
