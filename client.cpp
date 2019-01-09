@@ -143,6 +143,12 @@ int main(int argc, char* argv[])
             return 1;
         }
 
+        if (command_recv != 130)
+        {
+            std::cerr << command_recv << "Wrong command.\n";
+            return 1;
+        }
+
 // получение длины файла от сервера
         uint32_t filesize;
         res = recv(s, &filesize, sizeof(filesize), 0);
@@ -159,6 +165,24 @@ int main(int argc, char* argv[])
             std::cerr << file_name << "File not open.\n";
             return 1;
         }
+
+// получение содержимого буфера от сервера
+        char buff[1024] = {0};
+        size_t bytes_recv = 0;
+        for (size_t i = 1; i <= filesize; i++)
+        {
+            res = recv(s, buff, sizeof(buff), 0);
+            bytes_recv += res;
+            if (res < 0 || bytes_recv < filesize)
+            {
+                std::cerr << "Recv call error buff. " << strerror(errno) << "\n";
+                return 1;
+            }
+
+// запись файла
+            fout.write(buff, 1024);
+        }
+        fout.close();
     }
     return 0;
 }
