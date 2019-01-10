@@ -168,7 +168,7 @@ int main(int argc, char* argv[])
 
 // получение содержимого буфера от сервера
         size_t bytes_recv = 0;
-        for (size_t i = 1; i <= filesize; i++)
+        while (bytes_recv < filesize)
         {
             char buff[1024] = {0};
             res = recv(s, buff, sizeof(buff), 0);
@@ -180,7 +180,7 @@ int main(int argc, char* argv[])
             }
 
 // запись файла
-            fout.write(buff, 1024);
+            fout.write(buff, res);
         }
         fout.close();
     }
