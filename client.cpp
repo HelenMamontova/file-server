@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
             char buff[1024] = {0};
             res = recv(s, buff, sizeof(buff), 0);
             bytes_recv += res;
-            if (res < 0 || bytes_recv < filesize)
+            if (res < 0)
             {
                 std::cerr << "Recv call error buff. " << strerror(errno) << "\n";
                 return 1;
@@ -182,7 +182,6 @@ int main(int argc, char* argv[])
 // запись файла
             fout.write(buff, res);
         }
-        fout.close();
     }
     return 0;
 }
