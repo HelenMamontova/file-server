@@ -153,8 +153,8 @@ int main(int argc, char* argv[])
 
 // определение длины файла
         struct stat st_buff;
-        int rc = stat(path_file.c_str(), &st_buff);
-        if (rc < 0)
+        res = stat(path_file.c_str(), &st_buff);
+        if (res < 0)
         {
             std::cerr << "Stat call error. " << strerror(errno) << "\n";
             return 1;
@@ -195,7 +195,6 @@ int main(int argc, char* argv[])
                 }
             }
         }
-        fin.close();
         close(s1);
     }
 
