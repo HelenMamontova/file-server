@@ -23,6 +23,82 @@ void reference()
     std::cout << "--help, -h - show this text.\n";
 }
 
+int getFile(int s, const std::string& file_name)
+{
+    uint8_t com = 0;
+    int res = send(s, &com, sizeof(com), 0);
+    if (res < 0 || res != sizeof(com))
+    {
+        std::cerr << "Send call error. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+    uint32_t file_name_len = file_name.length();
+    res = send(s, &file_name_len, sizeof(file_name_len), 0);
+    if (res < 0 || res != sizeof(file_name_len))
+    {
+        std::cerr << "Send call error. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+    res = send(s, file_name.c_str(), file_name.length(), 0);
+    if (res < 0 || res != (int)file_name.length())
+    {
+        std::cerr << "Send call error. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+// получение кода команды отправки файла сервером
+    uint8_t command_recv;
+    res = recv(s, &command_recv, sizeof(command_recv), 0);
+    if (res < 0 || res != sizeof(command_recv))
+    {
+        std::cerr << "Recv call error command. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+    if (command_recv != 130)
+    {
+        std::cerr << command_recv << "Wrong command.\n";
+        return 1;
+    }
+
+// получение длины файла от сервера
+    uint32_t filesize;
+    res = recv(s, &filesize, sizeof(filesize), 0);
+    if (res < 0 || res != sizeof(filesize))
+    {
+        std::cerr << "Recv call error filesize. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+//открытие файла для записи
+    std::ofstream fout(file_name);
+    if (!fout)
+    {
+        std::cerr << file_name << "File not open.\n";
+        return 1;
+    }
+
+// получение содержимого буфера от сервера
+    size_t bytes_recv = 0;
+    while (bytes_recv < filesize)
+    {
+        char buff[1024] = {0};
+        res = recv(s, buff, sizeof(buff), 0);
+        bytes_recv += res;
+        if (res < 0)
+        {
+            std::cerr << "Recv call error buff. " << strerror(errno) << "\n";
+            return 1;
+        }
+
+// запись файла
+        fout.write(buff, res);
+    }
+    return 0;
+}
+
 int main(int argc, char* argv[])
 {
     std::string version = "1.0";
@@ -111,77 +187,12 @@ int main(int argc, char* argv[])
 
     if (command == "get")
     {
-        uint8_t com = 0;
-        int res = send(s, &com, sizeof(com), 0);
-        if (res < 0 || res != sizeof(com))
+        if (getFile(s, file_name))
         {
-            std::cerr << "Send call error. " << strerror(errno) << "\n";
+            std::cerr << "Get file error.\n";
             return 1;
-        }
-
-        uint32_t file_name_len = file_name.length();
-        res = send(s, &file_name_len, sizeof(file_name_len), 0);
-        if (res < 0 || res != sizeof(file_name_len))
-        {
-            std::cerr << "Send call error. " << strerror(errno) << "\n";
-            return 1;
-        }
-
-        res = send(s, file_name.c_str(), file_name.length(), 0);
-        if (res < 0 || res != (int)file_name.length())
-        {
-            std::cerr << "Send call error. " << strerror(errno) << "\n";
-            return 1;
-        }
-
-// получение кода команды отправки файла сервером
-        uint8_t command_recv;
-        res = recv(s, &command_recv, sizeof(command_recv), 0);
-        if (res < 0 || res != sizeof(command_recv))
-        {
-            std::cerr << "Recv call error command. " << strerror(errno) << "\n";
-            return 1;
-        }
-
-        if (command_recv != 130)
-        {
-            std::cerr << command_recv << "Wrong command.\n";
-            return 1;
-        }
-
-// получение длины файла от сервера
-        uint32_t filesize;
-        res = recv(s, &filesize, sizeof(filesize), 0);
-        if (res < 0 || res != sizeof(filesize))
-        {
-            std::cerr << "Recv call error filesize. " << strerror(errno) << "\n";
-            return 1;
-        }
-
-//открытие файла для записи
-        std::ofstream fout(file_name);
-        if (!fout)
-        {
-            std::cerr << file_name << "File not open.\n";
-            return 1;
-        }
-
-// получение содержимого буфера от сервера
-        size_t bytes_recv = 0;
-        while (bytes_recv < filesize)
-        {
-            char buff[1024] = {0};
-            res = recv(s, buff, sizeof(buff), 0);
-            bytes_recv += res;
-            if (res < 0)
-            {
-                std::cerr << "Recv call error buff. " << strerror(errno) << "\n";
-                return 1;
-            }
-
-// запись файла
-            fout.write(buff, res);
         }
     }
+
     return 0;
 }
