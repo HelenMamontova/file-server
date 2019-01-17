@@ -24,6 +24,65 @@ void reference()
     std::cout << "--help, -h - show this text.\n";
 }
 
+int sendFile(int s1, const std::string& path_file)
+{
+
+//отправка клиенту кода команды отправки файла
+    uint8_t command_send = 130;
+    int res = send(s1, &command_send, sizeof(command_send), 0);
+    if (res < 0 || res != sizeof(command_send))
+    {
+        std::cerr << "Send call error command. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+// определение длины файла
+    struct stat st_buff;
+    res = stat(path_file.c_str(), &st_buff);
+    if (res < 0)
+    {
+        std::cerr << "Stat call error. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+    uint32_t filesize = st_buff.st_size;
+
+//отправка клиенту длины файла
+    res = send(s1, &filesize, sizeof(filesize), 0);
+    if (res < 0 || res != sizeof(filesize))
+    {
+        std::cerr << "Send call error file size. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+//открытие сервером файла
+    std::ifstream fin(path_file);
+    if (!fin)
+    {
+        std::cerr << path_file << "File not open.\n";
+        return 1;
+    }
+
+// чтение файла в буфер
+    char buff[1024] = {0};
+    while (!fin.eof())
+    {
+        fin.read(buff, 1024);
+
+// отправка содержимого буфера клиенту
+        if (fin.gcount() > 0)
+        {
+            res = send(s1, buff, fin.gcount(), 0);
+            if (res < 0 || res != (int)fin.gcount())
+            {
+                std::cerr << "Send call error buff. " << strerror(errno) << "\n";
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
 int main(int argc, char* argv[])
 {
     std::string version = "1.0";
@@ -119,6 +178,7 @@ int main(int argc, char* argv[])
             return 1;
         }
 
+
         uint32_t file_name_len;
         res = recv(s1, &file_name_len, sizeof(file_name_len), 0);
         if (res < 0 || res != sizeof(file_name_len))
@@ -139,62 +199,15 @@ int main(int argc, char* argv[])
 
         std::string path_file = path + "/" + name;
 
-
-//отправка клиенту кода команды отправки файла
-        uint8_t command_send;
         if (com == 0)
-            command_send = 130;
-        res = send(s1, &command_send, sizeof(command_send), 0);
-        if (res < 0 || res != sizeof(command_send))
         {
-            std::cerr << "Send call error command. " << strerror(errno) << "\n";
-            return 1;
-        }
-
-// определение длины файла
-        struct stat st_buff;
-        res = stat(path_file.c_str(), &st_buff);
-        if (res < 0)
-        {
-            std::cerr << "Stat call error. " << strerror(errno) << "\n";
-            return 1;
-        }
-
-        uint32_t filesize = st_buff.st_size;
-
-//отправка клиенту длины файла
-        res = send(s1, &filesize, sizeof(filesize), 0);
-        if (res < 0 || res != sizeof(filesize))
-        {
-            std::cerr << "Send call error file size. " << strerror(errno) << "\n";
-            return 1;
-        }
-
-//открытие сервером файла
-        std::ifstream fin(path_file);
-        if (!fin)
-        {
-            std::cerr << name << "File not open.\n";
-            return 1;
-        }
-
-// чтение файла в буфер
-        char buff[1024] = {0};
-        while (!fin.eof())
-        {
-            fin.read(buff, 1024);
-
-// отправка содержимого буфера клиенту
-            if (fin.gcount() > 0)
+            if (sendFile(s1, path_file))
             {
-                res = send(s1, buff, fin.gcount(), 0);
-                if (res < 0 || res != (int)fin.gcount())
-                {
-                    std::cerr << "Send call error buff. " << strerror(errno) << "\n";
-                    return 1;
-                }
+                std::cerr << "Send file error.\n";
+                return 1;
             }
         }
+
         close(s1);
     }
 
