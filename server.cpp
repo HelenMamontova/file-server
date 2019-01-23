@@ -83,6 +83,54 @@ int sendFile(int s1, const std::string& path_file)
     return 0;
 }
 
+int receiveFile(int s1, const std::string& path_file)
+{
+// получение длины файла от клиента
+    uint32_t filesize;
+    int res = recv(s1, &filesize, sizeof(filesize), 0);
+    if (res < 0 || res != sizeof(filesize))
+    {
+        std::cerr << "Recv call error filesize. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+//открытие файла для записи
+    std::ofstream fout(path_file);
+    if (!fout)
+    {
+        std::cerr << path_file << "File not open.\n";
+        return 1;
+    }
+
+// получение содержимого буфера от клиента
+    size_t bytes_recv = 0;
+    while (bytes_recv < filesize)
+    {
+        char buff[1024] = {0};
+        res = recv(s1, buff, sizeof(buff), 0);
+        bytes_recv += res;
+        if (res < 0)
+        {
+            std::cerr << "Recv call error buff. " << strerror(errno) << "\n";
+            return 1;
+        }
+
+// запись файла
+        fout.write(buff, res);
+    }
+
+//отправка клиенту кода команды успешной записи файла
+    uint8_t command_send = 129;
+    res = send(s1, &command_send, sizeof(command_send), 0);
+    if (res < 0 || res != sizeof(command_send))
+    {
+        std::cerr << "Send call error command success. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+    return 0;
+}
+
 int main(int argc, char* argv[])
 {
     std::string version = "1.0";
@@ -174,7 +222,7 @@ int main(int argc, char* argv[])
         int res =recv(s1, &com, sizeof(com), 0);
         if (res < 0 || res != sizeof(com))
         {
-            std::cerr << "Recv call error command. " << strerror(errno) << "\n";
+            std::cerr << "Recv call error command main. " << strerror(errno) << "\n";
             return 1;
         }
 
@@ -207,6 +255,15 @@ int main(int argc, char* argv[])
                 return 1;
             }
         }
+        else if (com == 1)
+        {
+            if (receiveFile(s1, path_file))
+            {
+                std::cerr << "Receive file error.\n";
+                return 1;
+            }
+        }
+
 
         close(s1);
     }
