@@ -3,6 +3,7 @@
 #include <cstring>
 #include <string>
 #include <cstdint> //uint8_t, uint32_t
+#include <sys/stat.h> //stat, struct stat
 #include <sys/types.h> //socket, connect
 #include <sys/socket.h> //socket, connect
 #include <netinet/in.h> //struct sockaddr_in
@@ -23,7 +24,7 @@ void reference()
     std::cout << "--help, -h - show this text.\n";
 }
 
-int getFile(int s, const std::string& file_name)
+int receiveFile(int s, const std::string& file_name)
 {
     uint8_t com = 0;
     int res = send(s, &com, sizeof(com), 0);
@@ -96,6 +97,98 @@ int getFile(int s, const std::string& file_name)
 // запись файла
         fout.write(buff, res);
     }
+    return 0;
+}
+
+int sendFile(int s, const std::string& file_name)
+{
+
+//отправка серверу кода команды записи файла
+    uint8_t com = 1;
+    int res = send(s, &com, sizeof(com), 0);
+    if (res < 0 || res != sizeof(com))
+    {
+        std::cerr << "Send call error command." << strerror(errno) << "\n";
+        return 1;
+    }
+
+// отправка серверу длины имени файла
+    uint32_t file_name_len = file_name.length();
+    res = send(s, &file_name_len, sizeof(file_name_len), 0);
+    if (res < 0 || res != sizeof(file_name_len))
+    {
+        std::cerr << "Send call error file name length. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+// отправка серверу имени файла
+    res = send(s, file_name.c_str(), file_name.length(), 0);
+    if (res < 0 || res != (int)file_name.length())
+    {
+        std::cerr << "Send call error file name. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+// определение длины файла
+    struct stat st_buff;
+    res = stat(file_name.c_str(), &st_buff);
+    if (res < 0)
+    {
+        std::cerr << "Stat call error. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+    uint32_t filesize = st_buff.st_size;
+
+//отправка серверу длины файла
+    res = send(s, &filesize, sizeof(filesize), 0);
+    if (res < 0 || res != sizeof(filesize))
+    {
+        std::cerr << "Send call error file size. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+//открытие клиентом файла
+    std::ifstream fin(file_name);
+    if (!fin)
+    {
+        std::cerr << file_name << "File not open.\n";
+        return 1;
+    }
+
+// чтение файла в буфер
+    char buff[1024] = {0};
+    while (!fin.eof())
+    {
+        fin.read(buff, 1024);
+
+// отправка содержимого буфера серверу
+        if (fin.gcount() > 0)
+        {
+            res = send(s, buff, fin.gcount(), 0);
+            if (res < 0 || res != (int)fin.gcount())
+            {
+                std::cerr << "Send call error buff. " << strerror(errno) << "\n";
+                return 1;
+            }
+        }
+    }
+
+// получение кода команды успешной записи файла сервером
+    uint8_t command_recv;
+    res = recv(s, &command_recv, sizeof(command_recv), 0);
+    if (res < 0 || res != sizeof(command_recv))
+    {
+        std::cerr << "Recv call error command. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+    if (command_recv != 129)
+    {
+        std::cerr << command_recv << "Failed write file.\n";
+        return 1;
+    }
+
     return 0;
 }
 
@@ -187,9 +280,17 @@ int main(int argc, char* argv[])
 
     if (command == "get")
     {
-        if (getFile(s, file_name))
+        if (receiveFile(s, file_name))
         {
-            std::cerr << "Get file error.\n";
+            std::cerr << "Receive file error.\n";
+            return 1;
+        }
+    }
+    else if (command == "put")
+    {
+        if (sendFile(s, file_name))
+        {
+            std::cerr << "Send file error.\n";
             return 1;
         }
     }
