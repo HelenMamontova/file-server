@@ -2,3 +2,4 @@
 server
 client
 server_files
+*.txt
