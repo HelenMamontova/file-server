@@ -174,16 +174,16 @@ int sendFile(int s, const std::string& file_name)
         return 1;
     }
 
-// получение кода ошибки записи файла сервером
-    uint8_t command_error;
-    res = recv(s, &command_error, sizeof(command_error), 0);
-    if (res < 0 || res != sizeof(command_error))
+// получение кода состояния открытия файла для записи сервером
+    uint8_t state_file_open;
+    res = recv(s, &state_file_open, sizeof(state_file_open), 0);
+    if (res < 0 || res != sizeof(state_file_open))
     {
-        std::cerr << "Recv call error command_error. " << strerror(errno) << "\n";
+        std::cerr << "Recv call error state_file_open. " << strerror(errno) << "\n";
         return 1;
     }
 
-    if (command_error == 128)
+    if (state_file_open == 128)
     {
         if (!receiveError(s))
         {
