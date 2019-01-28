@@ -2,6 +2,7 @@
 #include <fstream>
 #include <cstring>
 #include <string>
+#include <vector>
 #include <cstdint> //uint8_t, uint32_t
 #include <sys/stat.h> //stat, struct stat
 #include <sys/types.h> //socket, connect
@@ -22,6 +23,31 @@ void reference()
     std::cout << "--list, -l - gets file list from server;\n";
     std::cout << "--version, -v - server version;\n";
     std::cout << "--help, -h - show this text.\n";
+}
+
+int receiveError(int s)
+{
+// получение клиентом длины сообщения об ошибке
+    uint32_t error_message_len;
+    int res = recv(s, &error_message_len, sizeof(error_message_len), 0);
+    if (res < 0 || res != sizeof(error_message_len))
+    {
+        std::cerr << "Recv call error error_message length. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+// получение клиентом сообщения об ошибке
+    std::vector <char> error_message(error_message_len);
+    res = recv(s, error_message.data(), error_message_len, 0);
+    if (res < 0 || res != (int)error_message_len)
+    {
+        std::cerr << "Recv call error error_message. " << strerror(errno) << "\n";
+        return 1;
+    }
+    std::string err_message(error_message.begin(), error_message.end());
+
+    std::cerr << err_message << "\n";
+    return 0;
 }
 
 int receiveFile(int s, const std::string& file_name)
@@ -145,6 +171,25 @@ int sendFile(int s, const std::string& file_name)
     if (res < 0 || res != sizeof(filesize))
     {
         std::cerr << "Send call error file size. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+// получение кода ошибки записи файла сервером
+    uint8_t command_error;
+    res = recv(s, &command_error, sizeof(command_error), 0);
+    if (res < 0 || res != sizeof(command_error))
+    {
+        std::cerr << "Recv call error command_error. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+    if (command_error == 128)
+    {
+        if (!receiveError(s))
+        {
+            std::cerr << "Recv call error message error.\n";
+            return 1;
+        }
         return 1;
     }
 
