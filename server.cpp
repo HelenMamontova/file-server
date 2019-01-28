@@ -24,6 +24,39 @@ void reference()
     std::cout << "--help, -h - show this text.\n";
 }
 
+int sendError(int s1)
+{
+
+//отправка клиенту кода ошибки открытия файла для записи
+    uint8_t command_send = 128;
+    int res = send(s1, &command_send, sizeof(command_send), 0);
+    if (res < 0 || res != sizeof(command_send))
+    {
+        std::cerr << "Send call error command. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+// отправка клиенту длины сообщения
+    std::string error_message = "File open error.";
+    uint32_t error_message_len = error_message.length();
+    res = send(s1, &error_message_len, sizeof(error_message_len), 0);
+    if (res < 0 || res != sizeof(error_message_len))
+    {
+        std::cerr << "Send call error error message length. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+// отправка клиенту ообщения об ошибке 
+    res = send(s1, error_message.c_str(), error_message.length(), 0);
+    if (res < 0 || res != (int)error_message.length())
+    {
+        std::cerr << "Send call error error message. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+    return 0;
+}
+
 int sendFile(int s1, const std::string& path_file)
 {
 
@@ -98,6 +131,12 @@ int receiveFile(int s1, const std::string& path_file)
     std::ofstream fout(path_file);
     if (!fout)
     {
+        if (sendError(s1))
+        {
+            std::cerr << "Send error message error.\n";
+            return 1;
+        }
+
         std::cerr << path_file << "File not open.\n";
         return 1;
     }
