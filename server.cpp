@@ -24,7 +24,7 @@ void reference()
     std::cout << "--help, -h - show this text.\n";
 }
 
-int sendError(int s1)
+int sendError(int s1, std::string error_message)
 {
 
 //отправка клиенту кода ошибки открытия файла для записи
@@ -37,7 +37,6 @@ int sendError(int s1)
     }
 
 // отправка клиенту длины сообщения
-    std::string error_message = "File open error.";
     uint32_t error_message_len = error_message.length();
     res = send(s1, &error_message_len, sizeof(error_message_len), 0);
     if (res < 0 || res != sizeof(error_message_len))
@@ -131,7 +130,8 @@ int receiveFile(int s1, const std::string& path_file)
     std::ofstream fout(path_file);
     if (!fout)
     {
-        if (sendError(s1))
+        std::string error_message = "File open error.";
+        if (sendError(s1, error_message))
         {
             std::cerr << "Send error message error.\n";
             return 1;
