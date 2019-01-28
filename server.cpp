@@ -24,6 +24,19 @@ void reference()
     std::cout << "--help, -h - show this text.\n";
 }
 
+int sendSuccess(int s1)
+{
+//отправка клиенту кода команды успешной записи файла
+    uint8_t command_success = 129;
+    int res = send(s1, &command_success, sizeof(command_success), 0);
+    if (res < 0 || res != sizeof(command_success))
+    {
+        std::cerr << "Send call error command success. " << strerror(errno) << "\n";
+        return 1;
+    }
+    return 0;
+}
+
 int sendError(int s1, std::string error_message)
 {
 
@@ -157,16 +170,6 @@ int receiveFile(int s1, const std::string& path_file)
 // запись файла
         fout.write(buff, res);
     }
-
-//отправка клиенту кода команды успешной записи файла
-    uint8_t command_send = 129;
-    res = send(s1, &command_send, sizeof(command_send), 0);
-    if (res < 0 || res != sizeof(command_send))
-    {
-        std::cerr << "Send call error command success. " << strerror(errno) << "\n";
-        return 1;
-    }
-
     return 0;
 }
 
@@ -298,7 +301,19 @@ int main(int argc, char* argv[])
         {
             if (receiveFile(s1, path_file))
             {
+                std::string error_message = "File write error.";
+                if (sendError(s1, error_message))
+                {
+                    std::cerr << "Send error message error.\n";
+                    return 1;
+                }
+
                 std::cerr << "Receive file error.\n";
+                return 1;
+            }
+            if (sendSuccess(s1))
+            {
+                std::cerr << "Send error success.\n";
                 return 1;
             }
         }
