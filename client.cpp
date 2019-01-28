@@ -219,21 +219,6 @@ int sendFile(int s, const std::string& file_name)
         }
     }
 
-// получение кода команды успешной записи файла сервером
-    uint8_t command_recv;
-    res = recv(s, &command_recv, sizeof(command_recv), 0);
-    if (res < 0 || res != sizeof(command_recv))
-    {
-        std::cerr << "Recv call error command. " << strerror(errno) << "\n";
-        return 1;
-    }
-
-    if (command_recv != 129)
-    {
-        std::cerr << command_recv << "Failed write file.\n";
-        return 1;
-    }
-
     return 0;
 }
 
@@ -336,6 +321,25 @@ int main(int argc, char* argv[])
         if (sendFile(s, file_name))
         {
             std::cerr << "Send file error.\n";
+            return 1;
+        }
+
+// получение кода состояния записи файла сервером
+        uint8_t state_file_write;
+        int res = recv(s, &state_file_write, sizeof(state_file_write), 0);
+        if (res < 0 || res != sizeof(state_file_write))
+        {
+            std::cerr << "Recv call error state_file_write. " << strerror(errno) << "\n";
+            return 1;
+        }
+
+        if (state_file_write == 128)
+        {
+            if (!receiveError(s))
+            {
+                std::cerr << "Recv call error message error.\n";
+                return 1;
+            }
             return 1;
         }
     }
