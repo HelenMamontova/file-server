@@ -153,6 +153,11 @@ int receiveFile(int s1, const std::string& path_file)
         std::cerr << path_file << "File not open.\n";
         return 1;
     }
+    if (sendSuccess(s1))
+    {
+        std::cerr << "Send error success.\n";
+        return 1;
+    }
 
 // получение содержимого буфера от клиента
     size_t bytes_recv = 0;
