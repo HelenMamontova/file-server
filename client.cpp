@@ -312,6 +312,24 @@ int main(int argc, char* argv[])
     {
         if (receiveFile(s, file_name))
         {
+// получение сообщения об ошибке отправки файла сервером
+            uint8_t error_file_send;
+            int res = recv(s, &error_file_send, sizeof(error_file_send), 0);
+            if (res < 0 || res != sizeof(error_file_send))
+            {
+                std::cerr << "Recv call error error_file_send. " << strerror(errno) << "\n";
+                return 1;
+            }
+
+            if (error_file_send == 128)
+            {
+                if (!receiveError(s))
+                {
+                    std::cerr << "Recv call error message error.\n";
+                    return 1;
+                }
+                return 1;
+            }
             std::cerr << "Receive file error.\n";
             return 1;
         }
