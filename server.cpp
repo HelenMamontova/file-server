@@ -298,6 +298,12 @@ int main(int argc, char* argv[])
         {
             if (sendFile(s1, path_file))
             {
+                std::string error_message = "File send error.";
+                if (sendError(s1, error_message))
+                {
+                    std::cerr << "Send error message error.\n";
+                    return 1;
+                }
                 std::cerr << "Send file error.\n";
                 return 1;
             }
