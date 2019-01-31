@@ -45,8 +45,6 @@ std::string receiveError(int s)
         exit(1);
     }
     std::string err_message(error_message.begin(), error_message.end());
-
-//    std::cerr << err_message << "\n";
     return err_message;
 }
 
@@ -213,8 +211,22 @@ int sendFile(int s, const std::string& file_name)
                 return 1;
             }
         }
-    }
 
+// получение кода состояния записи файла сервером
+        uint8_t state_file_write;
+        int res = recv(s, &state_file_write, sizeof(state_file_write), 0);
+        if (res < 0 || res != sizeof(state_file_write))
+        {
+            std::cerr << "Recv call error state_file_write. " << strerror(errno) << "\n";
+            return 1;
+        }
+
+        if (state_file_write == 128)
+        {
+            receiveError(s);
+            return 1;
+        }
+    }
     return 0;
 }
 
@@ -319,22 +331,6 @@ int main(int argc, char* argv[])
             std::cerr << "Send file error.\n";
             return 1;
         }
-
-// получение кода состояния записи файла сервером
-        uint8_t state_file_write;
-        int res = recv(s, &state_file_write, sizeof(state_file_write), 0);
-        if (res < 0 || res != sizeof(state_file_write))
-        {
-            std::cerr << "Recv call error state_file_write. " << strerror(errno) << "\n";
-            return 1;
-        }
-
-        if (state_file_write == 128)
-        {
-            receiveError(s);
-            return 1;
-        }
     }
-
     return 0;
 }
