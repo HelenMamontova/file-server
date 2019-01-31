@@ -72,11 +72,18 @@ int sendError(int s1, std::string error_message)
 int sendFile(int s1, const std::string& path_file)
 {
 
-//отправка клиенту кода команды отправки файла
+//отправка клиенту кода команды отправки файла или ошибки
     uint8_t command_send = 130;
     int res = send(s1, &command_send, sizeof(command_send), 0);
     if (res < 0 || res != sizeof(command_send))
     {
+        std::string error_message = "File send error.";
+        if (sendError(s1, error_message))
+        {
+            std::cerr << "Send error message error.\n";
+            return 1;
+        }
+
         std::cerr << "Send call error command. " << strerror(errno) << "\n";
         return 1;
     }
@@ -298,12 +305,6 @@ int main(int argc, char* argv[])
         {
             if (sendFile(s1, path_file))
             {
-                std::string error_message = "File send error.";
-                if (sendError(s1, error_message))
-                {
-                    std::cerr << "Send error message error.\n";
-                    return 1;
-                }
                 std::cerr << "Send file error.\n";
                 return 1;
             }
