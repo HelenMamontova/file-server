@@ -65,7 +65,6 @@ int sendError(int s1, std::string error_message)
         std::cerr << "Send call error error message. " << strerror(errno) << "\n";
         return 1;
     }
-
     return 0;
 }
 
@@ -180,7 +179,21 @@ int receiveFile(int s1, const std::string& path_file)
         }
 
 // запись файла
-        fout.write(buff, res);
+        if (!fout.write(buff, res))
+        {
+            std::string error_message = "File write error.";
+            if (sendError(s1, error_message))
+            {
+                std::cerr << "Send error message error.\n";
+                return 1;
+            }
+        }
+
+        if (sendSuccess(s1))
+        {
+            std::cerr << "Send error success.\n";
+            return 1;
+        }
     }
     return 0;
 }
@@ -313,25 +326,11 @@ int main(int argc, char* argv[])
         {
             if (receiveFile(s1, path_file))
             {
-                std::string error_message = "File write error.";
-                if (sendError(s1, error_message))
-                {
-                    std::cerr << "Send error message error.\n";
-                    return 1;
-                }
-
                 std::cerr << "Receive file error.\n";
                 return 1;
             }
-            if (sendSuccess(s1))
-            {
-                std::cerr << "Send error success.\n";
-                return 1;
-            }
         }
-
         close(s1);
     }
-
     return 0;
 }
