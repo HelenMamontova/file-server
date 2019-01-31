@@ -75,7 +75,7 @@ int receiveFile(int s, const std::string& file_name)
         return 1;
     }
 
-// получение кода команды отправки файла сервером
+// получение кода команды отправки файла сервером или кода ошибки
     uint8_t command_recv;
     res = recv(s, &command_recv, sizeof(command_recv), 0);
     if (res < 0 || res != sizeof(command_recv))
@@ -86,7 +86,7 @@ int receiveFile(int s, const std::string& file_name)
 
     if (command_recv != 130)
     {
-        std::cerr << command_recv << "Wrong command.\n";
+        receiveError(s);
         return 1;
     }
 
@@ -308,20 +308,8 @@ int main(int argc, char* argv[])
     {
         if (receiveFile(s, file_name))
         {
-// получение сообщения об ошибке отправки файла сервером
-            uint8_t error_file_send;
-            int res = recv(s, &error_file_send, sizeof(error_file_send), 0);
-            if (res < 0 || res != sizeof(error_file_send))
-            {
-                std::cerr << "Recv call error error_file_send. " << strerror(errno) << "\n";
-                return 1;
-            }
-
-            if (error_file_send == 128)
-            {
-                receiveError(s);
-                return 1;
-            }
+            std::cerr << "Receive file error.\n";
+            return 1;
         }
     }
     else if (command == "put")
