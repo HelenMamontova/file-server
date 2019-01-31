@@ -25,7 +25,7 @@ void reference()
     std::cout << "--help, -h - show this text.\n";
 }
 
-int receiveError(int s)
+std::string receiveError(int s)
 {
 // получение клиентом длины сообщения об ошибке
     uint32_t error_message_len;
@@ -33,7 +33,7 @@ int receiveError(int s)
     if (res < 0 || res != sizeof(error_message_len))
     {
         std::cerr << "Recv call error error_message length. " << strerror(errno) << "\n";
-        return 1;
+        exit(1);
     }
 
 // получение клиентом сообщения об ошибке
@@ -42,12 +42,12 @@ int receiveError(int s)
     if (res < 0 || res != (int)error_message_len)
     {
         std::cerr << "Recv call error error_message. " << strerror(errno) << "\n";
-        return 1;
+        exit(1);
     }
     std::string err_message(error_message.begin(), error_message.end());
 
-    std::cerr << err_message << "\n";
-    return 0;
+//    std::cerr << err_message << "\n";
+    return err_message;
 }
 
 int receiveFile(int s, const std::string& file_name)
@@ -185,11 +185,7 @@ int sendFile(int s, const std::string& file_name)
 
     if (state_file_open == 128)
     {
-        if (!receiveError(s))
-        {
-            std::cerr << "Recv call error message error.\n";
-            return 1;
-        }
+        receiveError(s);
         return 1;
     }
 
@@ -323,15 +319,9 @@ int main(int argc, char* argv[])
 
             if (error_file_send == 128)
             {
-                if (!receiveError(s))
-                {
-                    std::cerr << "Recv call error message error.\n";
-                    return 1;
-                }
+                receiveError(s);
                 return 1;
             }
-            std::cerr << "Receive file error.\n";
-            return 1;
         }
     }
     else if (command == "put")
@@ -353,11 +343,7 @@ int main(int argc, char* argv[])
 
         if (state_file_write == 128)
         {
-            if (!receiveError(s))
-            {
-                std::cerr << "Recv call error message error.\n";
-                return 1;
-            }
+            receiveError(s);
             return 1;
         }
     }
