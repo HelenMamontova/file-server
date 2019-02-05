@@ -48,6 +48,48 @@ std::string receiveError(int s)
     return err_message;
 }
 
+int receiveList(int s)
+{
+    uint8_t com = 2;
+    int res = send(s, &com, sizeof(com), 0);
+    if (res < 0 || res != sizeof(com))
+    {
+        std::cerr << "Send call error. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+// получение кода команды отправки списка файлов сервером
+    uint8_t command_recv;
+    res = recv(s, &command_recv, sizeof(command_recv), 0);
+    if (res < 0 || res != sizeof(command_recv))
+    {
+        std::cerr << "Recv call error command. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+
+// получение клиентом длины списка файлов
+    uint32_t list_len;
+    res = recv(s, &list_len, sizeof(list_len), 0);
+    if (res < 0 || res != sizeof(list_len))
+    {
+        std::cerr << "Recv call error list length. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+// получение клиентом списка файлов
+    std::vector <char> list(list_len);
+    res = recv(s, list.data(), list_len, 0);
+    if (res < 0 || res != (int)list_len)
+    {
+        std::cerr << "Recv call error list. " << strerror(errno) << "\n";
+        return 1;
+    }
+    std::string file_list(list.begin(), list.end());
+    std::cout << file_list << "\n";
+    return 0;
+}
+
 int receiveFile(int s, const std::string& file_name)
 {
     uint8_t com = 0;
@@ -331,6 +373,15 @@ int main(int argc, char* argv[])
             std::cerr << "Send file error.\n";
             return 1;
         }
+    }
+    else if (command == "list")
+    {
+        if (receiveList(s))
+        {
+            std::cerr << "Receive list error.\n";
+            return 1;
+        }
+
     }
     return 0;
 }
