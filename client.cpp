@@ -44,8 +44,7 @@ std::string receiveError(int s)
         std::cerr << "Recv call error error_message. " << strerror(errno) << "\n";
         exit(1);
     }
-    std::string err_message(error_message.begin(), error_message.end());
-    return err_message;
+    return std::string(error_message.begin(), error_message.end());
 }
 
 int receiveList(int s)
