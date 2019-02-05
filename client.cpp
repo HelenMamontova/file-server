@@ -123,7 +123,7 @@ int receiveFile(int s, const std::string& file_name)
         return 1;
     }
 
-    if (command_recv != 130)
+    if (command_recv == 128)
     {
         receiveError(s);
         return 1;
