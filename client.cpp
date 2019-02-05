@@ -125,7 +125,7 @@ int receiveFile(int s, const std::string& file_name)
 
     if (command_recv == 128)
     {
-        receiveError(s);
+        std::cerr << receiveError(s) << "\n";
         return 1;
     }
 
@@ -224,7 +224,7 @@ int sendFile(int s, const std::string& file_name)
 
     if (state_file_open == 128)
     {
-        receiveError(s);
+        std::cerr << receiveError(s) << "\n";
         return 1;
     }
 
@@ -264,7 +264,7 @@ int sendFile(int s, const std::string& file_name)
 
         if (state_file_write == 128)
         {
-            receiveError(s);
+            std:: cerr << receiveError(s) << "\n";
             return 1;
         }
     }
