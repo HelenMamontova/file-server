@@ -32,8 +32,7 @@ std::string receiveError(int s)
     int res = recv(s, &error_message_len, sizeof(error_message_len), 0);
     if (res < 0 || res != sizeof(error_message_len))
     {
-        std::cerr << "Recv call error error_message length. " << strerror(errno) << "\n";
-        exit(1);
+        return ("Recv call error error_message length. " + std::string(strerror(errno)));
     }
 
 // получение клиентом сообщения об ошибке
@@ -41,8 +40,7 @@ std::string receiveError(int s)
     res = recv(s, error_message.data(), error_message_len, 0);
     if (res < 0 || res != (int)error_message_len)
     {
-        std::cerr << "Recv call error error_message. " << strerror(errno) << "\n";
-        exit(1);
+        return ("Recv call error error_message. " + std::string(strerror(errno)));
     }
     return std::string(error_message.begin(), error_message.end());
 }
