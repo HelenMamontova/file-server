@@ -40,7 +40,6 @@ int sendSuccess(int s1)
 
 int sendError(int s1, std::string error_message)
 {
-
 //отправка клиенту кода ошибки открытия файла для записи
     uint8_t command_send = 128;
     int res = send(s1, &command_send, sizeof(command_send), 0);
@@ -59,7 +58,7 @@ int sendError(int s1, std::string error_message)
         return 1;
     }
 
-// отправка клиенту ообщения об ошибке 
+// отправка клиенту ообщения об ошибке
     res = send(s1, error_message.c_str(), error_message.length(), 0);
     if (res < 0 || res != (int)error_message.length())
     {
@@ -71,7 +70,6 @@ int sendError(int s1, std::string error_message)
 
 int sendList(int s1, const std::string& path)
 {
-
 //отправка клиенту кода команды отправки списка файлов
     uint8_t command_send = 131;
     int res = send(s1, &command_send, sizeof(command_send), 0);
@@ -91,12 +89,29 @@ int sendList(int s1, const std::string& path)
         return 1;
     }
     std::string list;
-    while ((entry = readdir(dir)) != NULL)
+    while ((entry = readdir(dir)))
     {
-        list = list + entry->d_name + "\n";
+        if (strcmp(".", entry->d_name) && strcmp("..", entry->d_name))
+            list = list + entry->d_name + "\n";
+    }
+    closedir(dir);
+
+// отправка клиенту длины списка файлов
+    uint32_t list_len = list.length();
+    res = send(s1, &list_len, sizeof(list_len), 0);
+    if (res < 0 || res != sizeof(list_len))
+    {
+        std::cerr << "Send call error list length. " << strerror(errno) << "\n";
+        return 1;
     }
 
-std::cout << "List: " << list << "\n";
+// отправка клиенту списка файлов
+    res = send(s1, list.c_str(), list.length(), 0);
+    if (res < 0 || res != (int)list.length())
+    {
+        std::cerr << "Send call error file list. " << strerror(errno) << "\n";
+        return 1;
+    }
     return 0;
 }
 
@@ -120,7 +135,6 @@ std::string receiveFileName(int s1, std::string path)
 
 int sendFile(int s1, const std::string& path_file)
 {
-
 //отправка клиенту кода команды отправки файла или ошибки
     uint8_t command_send = 130;
     int res = send(s1, &command_send, sizeof(command_send), 0);
