@@ -8,6 +8,7 @@
 #include <sys/types.h> //socket, bind
 #include <sys/socket.h> //socket, bind, accept, listen
 #include <netinet/in.h> //struct sockaddr_in
+#include <dirent.h> //struct dirent, opendir, readdir, closedir
 #include <errno.h>
 #include <unistd.h> //close
 
@@ -66,6 +67,55 @@ int sendError(int s1, std::string error_message)
         return 1;
     }
     return 0;
+}
+
+int sendList(int s1, const std::string& path)
+{
+
+//отправка клиенту кода команды отправки списка файлов
+    uint8_t command_send = 131;
+    int res = send(s1, &command_send, sizeof(command_send), 0);
+    if (res < 0 || res != sizeof(command_send))
+    {
+        std::cerr << "Send call error command. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+//получение списка файлов
+    DIR *dir;
+    struct dirent *entry;
+    dir = opendir(path.c_str());
+    if (dir == NULL)
+    {
+        std::cerr << "Opendir call error. " << strerror(errno) << "\n";
+        return 1;
+    }
+    std::string list;
+    while ((entry = readdir(dir)) != NULL)
+    {
+        list = list + entry->d_name + "\n";
+    }
+
+std::cout << "List: " << list << "\n";
+    return 0;
+}
+
+std::string receiveFileName(int s1, std::string path)
+{
+        uint32_t file_name_len;
+        int res = recv(s1, &file_name_len, sizeof(file_name_len), 0);
+        if (res < 0 || res != sizeof(file_name_len))
+            return ("Recv call error file name length. " + std::string( strerror(errno)) + "\n");
+
+// получение сервером имени файла
+        std::vector <char> file_name(file_name_len);
+        res = recv(s1, file_name.data(), file_name_len, 0);
+        if (res < 0 || res != (int)file_name_len)
+            return ("Recv call error file name. " + std::string( strerror(errno)) + "\n");
+
+        std::string name(file_name.begin(), file_name.end());
+
+        return std::string(path + "/" + name);
 }
 
 int sendFile(int s1, const std::string& path_file)
@@ -293,29 +343,10 @@ int main(int argc, char* argv[])
             return 1;
         }
 
-
-        uint32_t file_name_len;
-        res = recv(s1, &file_name_len, sizeof(file_name_len), 0);
-        if (res < 0 || res != sizeof(file_name_len))
-        {
-            std::cerr << "Recv call error file name length. " << strerror(errno) << "\n";
-            return 1;
-        }
-
-// получение сервером имени файла
-        std::vector <char> file_name(file_name_len);
-        res = recv(s1, file_name.data(), file_name_len, 0);
-        if (res < 0 || res != (int)file_name_len)
-        {
-            std::cerr << "Recv call error file name. " << strerror(errno) << "\n";
-            return 1;
-        }
-        std::string name(file_name.begin(), file_name.end());
-
-        std::string path_file = path + "/" + name;
-
         if (com == 0)
         {
+            std::string path_file = receiveFileName(s1, path);
+
             if (sendFile(s1, path_file))
             {
                 std::cerr << "Send file error.\n";
@@ -324,9 +355,19 @@ int main(int argc, char* argv[])
         }
         else if (com == 1)
         {
+            std::string path_file = receiveFileName(s1, path);
+
             if (receiveFile(s1, path_file))
             {
                 std::cerr << "Receive file error.\n";
+                return 1;
+            }
+        }
+        else if (com == 2)
+        {
+            if (sendList(s1, path))
+            {
+                std::cerr << "Send list error.\n";
                 return 1;
             }
         }
