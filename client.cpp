@@ -31,17 +31,14 @@ std::string receiveError(int s)
     uint32_t error_message_len;
     int res = recv(s, &error_message_len, sizeof(error_message_len), 0);
     if (res < 0 || res != sizeof(error_message_len))
-    {
         return ("Recv call error error_message length. " + std::string(strerror(errno)));
-    }
 
 // получение клиентом сообщения об ошибке
     std::vector <char> error_message(error_message_len);
     res = recv(s, error_message.data(), error_message_len, 0);
     if (res < 0 || res != (int)error_message_len)
-    {
         return ("Recv call error error_message. " + std::string(strerror(errno)));
-    }
+
     return std::string(error_message.begin(), error_message.end());
 }
 
@@ -63,7 +60,6 @@ int receiveList(int s)
         std::cerr << "Recv call error command. " << strerror(errno) << "\n";
         return 1;
     }
-
 
 // получение клиентом длины списка файлов
     uint32_t list_len;
@@ -165,7 +161,6 @@ int receiveFile(int s, const std::string& file_name)
 
 int sendFile(int s, const std::string& file_name)
 {
-
 //отправка серверу кода команды записи файла
     uint8_t com = 1;
     int res = send(s, &com, sizeof(com), 0);
@@ -378,7 +373,6 @@ int main(int argc, char* argv[])
             std::cerr << "Receive list error.\n";
             return 1;
         }
-
     }
     return 0;
 }
