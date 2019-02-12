@@ -81,7 +81,6 @@ int sendList(int s1, const std::string& path)
 
 //получение списка файлов
     DIR *dir;
-    struct dirent *entry;
     dir = opendir(path.c_str());
     if (dir == NULL)
     {
@@ -89,7 +88,8 @@ int sendList(int s1, const std::string& path)
         return 1;
     }
     std::string list;
-    while ((entry = readdir(dir)))
+
+    for (struct dirent *entry = readdir(dir); entry != NULL; entry = readdir(dir))
     {
         if (strcmp(".", entry->d_name) && strcmp("..", entry->d_name))
             list = list + entry->d_name + "\n";
