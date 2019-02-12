@@ -31,13 +31,13 @@ std::string receiveError(int s)
     uint32_t error_message_len;
     int res = recv(s, &error_message_len, sizeof(error_message_len), 0);
     if (res < 0 || res != sizeof(error_message_len))
-        return ("Recv call error error_message length. " + std::string(strerror(errno)));
+        return "Recv call error error_message length. " + std::string(strerror(errno));
 
 // получение клиентом сообщения об ошибке
     std::vector <char> error_message(error_message_len);
     res = recv(s, error_message.data(), error_message_len, 0);
     if (res < 0 || res != (int)error_message_len)
-        return ("Recv call error error_message. " + std::string(strerror(errno)));
+        return "Recv call error error_message. " + std::string(strerror(errno));
 
     return std::string(error_message.begin(), error_message.end());
 }
@@ -58,6 +58,11 @@ int receiveList(int s)
     if (res < 0 || res != sizeof(command_recv))
     {
         std::cerr << "Recv call error command. " << strerror(errno) << "\n";
+        return 1;
+    }
+    if (command_recv != 131 )
+    {
+        std:: cerr << "Wrong commad to send list." << "\n";
         return 1;
     }
 
