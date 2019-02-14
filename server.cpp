@@ -371,6 +371,26 @@ int main(int argc, char* argv[])
         {
             std::string path_file = receiveFileName(s1, path);
 
+            struct stat st;
+            if (stat(path_file.c_str(), &st) == 0)
+            {
+                std::string error_message = "Such file already exists.";
+                if (sendError(s1, error_message))
+                {
+                    std::cerr << "Send error message error.\n";
+                    return 1;
+                }
+
+                std::cerr << "Such file already exists: " << path_file << "\n";
+                return 1;
+            }
+
+            if (sendSuccess(s1))
+            {
+                std::cerr << "Send error success.\n";
+                return 1;
+            }
+
             if (receiveFile(s1, path_file))
             {
                 std::cerr << "Receive file error.\n";
