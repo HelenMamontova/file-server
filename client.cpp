@@ -192,6 +192,21 @@ int sendFile(int s, const std::string& file_name)
         return 1;
     }
 
+// получение разрешения или запрета для имени файла
+    uint8_t file_name_allow;
+    res = recv(s, &file_name_allow, sizeof(file_name_allow), 0);
+    if (res < 0 || res != sizeof(file_name_allow))
+    {
+        std::cerr << "Recv call error file_name_allow. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+    if (file_name_allow == 128)
+    {
+        std::cerr << receiveError(s) << "\n";
+        return 1;
+    }
+
 // определение длины файла
     struct stat st_buff;
     res = stat(file_name.c_str(), &st_buff);
