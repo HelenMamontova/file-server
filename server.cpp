@@ -231,6 +231,7 @@ int receiveFile(int s1, const std::string& path_file)
 
 // получение содержимого буфера от клиента
     size_t bytes_recv = 0;
+    int bytes_write = 0;
     while (bytes_recv < filesize)
     {
         char buff[1024] = {0};
@@ -245,19 +246,26 @@ int receiveFile(int s1, const std::string& path_file)
 // запись файла
         if (!fout.write(buff, res))
         {
-            std::string error_message = "File write error.";
-            if (sendError(s1, error_message))
-            {
-                std::cerr << "Send error message error.\n";
-                return 1;
-            }
+            bytes_write = -1;
+            break;
         }
+    }
 
-        if (sendSuccess(s1))
+// отправка клиенту сообщения о состоянии записи файла
+    if (bytes_write < 0)
+    {
+        std::string error_message = "File write error.";
+        if (sendError(s1, error_message))
         {
-            std::cerr << "Send error success.\n";
+            std::cerr << "Send error message error.\n";
             return 1;
         }
+    }
+
+    if (sendSuccess(s1))
+    {
+        std::cerr << "Send error success.\n";
+        return 1;
     }
     return 0;
 }
