@@ -80,8 +80,7 @@ int sendList(int s1, const std::string& path)
     }
 
 //получение списка файлов
-    DIR *dir;
-    dir = opendir(path.c_str());
+    DIR *dir = opendir(path.c_str());
     if (dir == NULL)
     {
         std::cerr << "Opendir call error. " << strerror(errno) << "\n";
