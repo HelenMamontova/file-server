@@ -266,20 +266,21 @@ int sendFile(int s, const std::string& file_name)
             }
         }
 
-// получение кода состояния записи файла сервером
-        uint8_t state_file_write;
-        int res = recv(s, &state_file_write, sizeof(state_file_write), 0);
-        if (res < 0 || res != sizeof(state_file_write))
-        {
-            std::cerr << "Recv call error state_file_write. " << strerror(errno) << "\n";
-            return 1;
-        }
+    }
 
-        if (state_file_write == 128)
-        {
-            std:: cerr << receiveError(s) << "\n";
-            return 1;
-        }
+// получение кода состояния записи файла сервером
+    uint8_t state_file_write;
+    res = recv(s, &state_file_write, sizeof(state_file_write), 0);
+    if (res < 0 || res != sizeof(state_file_write))
+    {
+        std::cerr << "Recv call error state_file_write. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+    if (state_file_write == 128)
+    {
+        std:: cerr << receiveError(s) << "\n";
+        return 1;
     }
     return 0;
 }
