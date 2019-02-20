@@ -197,8 +197,31 @@ int sendFile(int s1, const std::string& path_file)
     return 0;
 }
 
-int receiveFile(int s1, const std::string& path_file)
+int receiveFile(int s1, const std::string& path)
 {
+    std::string path_file = receiveFileName(s1, path);
+
+// проверка существования файла
+    struct stat st;
+    if (stat(path_file.c_str(), &st) == 0)
+    {
+        std::string error_message = "Such file already exists.";
+        if (sendError(s1, error_message))
+        {
+            std::cerr << "Send error message error.\n";
+            return 1;
+        }
+
+        std::cerr << "Such file already exists: " << path_file << "\n";
+        return 1;
+    }
+
+    if (sendSuccess(s1))
+    {
+        std::cerr << "Send error success.\n";
+        return 1;
+    }
+
 // получение длины файла от клиента
     uint32_t filesize;
     int res = recv(s1, &filesize, sizeof(filesize), 0);
@@ -212,19 +235,7 @@ int receiveFile(int s1, const std::string& path_file)
     std::ofstream fout(path_file);
     if (!fout)
     {
-        std::string error_message = "File open error.";
-        if (sendError(s1, error_message))
-        {
-            std::cerr << "Send error message error.\n";
-            return 1;
-        }
-
         std::cerr << path_file << "File not open.\n";
-        return 1;
-    }
-    if (sendSuccess(s1))
-    {
-        std::cerr << "Send error success.\n";
         return 1;
     }
 
@@ -376,29 +387,7 @@ int main(int argc, char* argv[])
         }
         else if (com == 1)
         {
-            std::string path_file = receiveFileName(s1, path);
-
-            struct stat st;
-            if (stat(path_file.c_str(), &st) == 0)
-            {
-                std::string error_message = "Such file already exists.";
-                if (sendError(s1, error_message))
-                {
-                    std::cerr << "Send error message error.\n";
-                    return 1;
-                }
-
-                std::cerr << "Such file already exists: " << path_file << "\n";
-                return 1;
-            }
-
-            if (sendSuccess(s1))
-            {
-                std::cerr << "Send error success.\n";
-                return 1;
-            }
-
-            if (receiveFile(s1, path_file))
+            if (receiveFile(s1, path))
             {
                 std::cerr << "Receive file error.\n";
                 return 1;
