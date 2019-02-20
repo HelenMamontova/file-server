@@ -132,20 +132,30 @@ std::string receiveFileName(int s1, std::string path)
         return std::string(path + "/" + name);
 }
 
-int sendFile(int s1, const std::string& path_file)
+int sendFile(int s1, const std::string& path)
 {
-//отправка клиенту кода команды отправки файла или ошибки
-    uint8_t command_send = 130;
-    int res = send(s1, &command_send, sizeof(command_send), 0);
-    if (res < 0 || res != sizeof(command_send))
+    std::string path_file = receiveFileName(s1, path);
+
+// проверка существования файла
+    struct stat st;
+    if (stat(path_file.c_str(), &st) < 0)
     {
-        std::string error_message = "File send error.";
+        std::string error_message = "File does not exists or does not have access.";
         if (sendError(s1, error_message))
         {
             std::cerr << "Send error message error.\n";
             return 1;
         }
 
+        std::cerr << "File does not exists or does not have access: " << path_file << "\n";
+        return 1;
+    }
+
+//отправка клиенту кода команды отправки файла
+    uint8_t command_send = 130;
+    int res = send(s1, &command_send, sizeof(command_send), 0);
+    if (res < 0 || res != sizeof(command_send))
+    {
         std::cerr << "Send call error command. " << strerror(errno) << "\n";
         return 1;
     }
@@ -377,9 +387,7 @@ int main(int argc, char* argv[])
 
         if (com == 0)
         {
-            std::string path_file = receiveFileName(s1, path);
-
-            if (sendFile(s1, path_file))
+            if (sendFile(s1, path))
             {
                 std::cerr << "Send file error.\n";
                 return 1;
