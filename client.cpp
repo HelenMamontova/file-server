@@ -226,21 +226,6 @@ int sendFile(int s, const std::string& file_name)
         return 1;
     }
 
-// получение кода состояния открытия файла для записи сервером
-    uint8_t state_file_open;
-    res = recv(s, &state_file_open, sizeof(state_file_open), 0);
-    if (res < 0 || res != sizeof(state_file_open))
-    {
-        std::cerr << "Recv call error state_file_open. " << strerror(errno) << "\n";
-        return 1;
-    }
-
-    if (state_file_open == 128)
-    {
-        std::cerr << receiveError(s) << "\n";
-        return 1;
-    }
-
 //открытие клиентом файла
     std::ifstream fin(file_name);
     if (!fin)
