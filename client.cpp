@@ -277,14 +277,21 @@ int sendFile(int s, const std::string& file_name)
             std:: cerr << receiveError(s) << "\n";
             return 1;
         }
-        return 0;
+        else if (state_file_write == 129)
+        {
+            return 0;
+        }
+        else
+        {
+            std::cerr << "Unknown command: " << state_file_write << "\n";
+            return 1;
+        }
     }
     else
     {
         std::cerr << "Unknown command: " << file_name_allow << "\n";
         return 1;
     }
-
 }
 
 int main(int argc, char* argv[])
