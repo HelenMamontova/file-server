@@ -170,7 +170,6 @@ int receiveFile(int s, const std::string& file_name)
         std::cerr << "Unknown command: " << command_recv << "\n";
         return 1;
     }
-//    return 0;
 }
 
 int sendFile(int s, const std::string& file_name)
@@ -215,68 +214,77 @@ int sendFile(int s, const std::string& file_name)
         std::cerr << receiveError(s) << "\n";
         return 1;
     }
-
-// определение длины файла
-    struct stat st_buff;
-    res = stat(file_name.c_str(), &st_buff);
-    if (res < 0)
+    else if (file_name_allow == 129)
     {
-        std::cerr << "Stat call error. " << strerror(errno) << "\n";
-        return 1;
-    }
 
-    uint32_t filesize = st_buff.st_size;
-
-//отправка серверу длины файла
-    res = send(s, &filesize, sizeof(filesize), 0);
-    if (res < 0 || res != sizeof(filesize))
-    {
-        std::cerr << "Send call error file size. " << strerror(errno) << "\n";
-        return 1;
-    }
-
-//открытие клиентом файла
-    std::ifstream fin(file_name);
-    if (!fin)
-    {
-        std::cerr << file_name << "File not open.\n";
-        return 1;
-    }
-
-// чтение файла в буфер
-    char buff[1024] = {0};
-    while (!fin.eof())
-    {
-        fin.read(buff, 1024);
-
-// отправка содержимого буфера серверу
-        if (fin.gcount() > 0)
+    // определение длины файла
+        struct stat st_buff;
+        res = stat(file_name.c_str(), &st_buff);
+        if (res < 0)
         {
-            res = send(s, buff, fin.gcount(), 0);
-            if (res < 0 || res != (int)fin.gcount())
-            {
-                std::cerr << "Send call error buff. " << strerror(errno) << "\n";
-                return 1;
-            }
+            std::cerr << "Stat call error. " << strerror(errno) << "\n";
+            return 1;
         }
 
-    }
+        uint32_t filesize = st_buff.st_size;
 
-// получение кода состояния записи файла сервером
-    uint8_t state_file_write;
-    res = recv(s, &state_file_write, sizeof(state_file_write), 0);
-    if (res < 0 || res != sizeof(state_file_write))
+    //отправка серверу длины файла
+        res = send(s, &filesize, sizeof(filesize), 0);
+        if (res < 0 || res != sizeof(filesize))
+        {
+            std::cerr << "Send call error file size. " << strerror(errno) << "\n";
+            return 1;
+        }
+
+    //открытие клиентом файла
+        std::ifstream fin(file_name);
+        if (!fin)
+        {
+            std::cerr << file_name << "File not open.\n";
+            return 1;
+        }
+
+    // чтение файла в буфер
+        char buff[1024] = {0};
+        while (!fin.eof())
+        {
+            fin.read(buff, 1024);
+
+    // отправка содержимого буфера серверу
+            if (fin.gcount() > 0)
+            {
+                res = send(s, buff, fin.gcount(), 0);
+                if (res < 0 || res != (int)fin.gcount())
+                {
+                    std::cerr << "Send call error buff. " << strerror(errno) << "\n";
+                    return 1;
+                }
+            }
+
+        }
+
+    // получение кода состояния записи файла сервером
+        uint8_t state_file_write;
+        res = recv(s, &state_file_write, sizeof(state_file_write), 0);
+        if (res < 0 || res != sizeof(state_file_write))
+        {
+            std::cerr << "Recv call error state_file_write. " << strerror(errno) << "\n";
+            return 1;
+        }
+
+        if (state_file_write == 128)
+        {
+            std:: cerr << receiveError(s) << "\n";
+            return 1;
+        }
+        return 0;
+    }
+    else
     {
-        std::cerr << "Recv call error state_file_write. " << strerror(errno) << "\n";
+        std::cerr << "Unknown command: " << file_name_allow << "\n";
         return 1;
     }
 
-    if (state_file_write == 128)
-    {
-        std:: cerr << receiveError(s) << "\n";
-        return 1;
-    }
-    return 0;
 }
 
 int main(int argc, char* argv[])
