@@ -114,27 +114,28 @@ int sendList(int s1, const std::string& path)
     return 0;
 }
 
-std::string receiveFileName(int s1, std::string path)
+std::string receiveFileName(int s1)
 {
         uint32_t file_name_len;
         int res = recv(s1, &file_name_len, sizeof(file_name_len), 0);
         if (res < 0 || res != sizeof(file_name_len))
-            return ("Recv call error file name length. " + std::string( strerror(errno)) + "\n");
+            return "Recv call error file name length. " + std::string( strerror(errno)) + "\n";
 
 // получение сервером имени файла
         std::vector <char> file_name(file_name_len);
         res = recv(s1, file_name.data(), file_name_len, 0);
         if (res < 0 || res != (int)file_name_len)
-            return ("Recv call error file name. " + std::string( strerror(errno)) + "\n");
+            return "Recv call error file name. " + std::string( strerror(errno)) + "\n";
 
         std::string name(file_name.begin(), file_name.end());
 
-        return std::string(path + "/" + name);
+        return name;
 }
 
 int sendFile(int s1, const std::string& path)
 {
-    std::string path_file = receiveFileName(s1, path);
+    std::string file_name = receiveFileName(s1);
+    std::string path_file = path + "/" + file_name;
 
 // проверка существования файла
     struct stat st;
@@ -209,7 +210,8 @@ int sendFile(int s1, const std::string& path)
 
 int receiveFile(int s1, const std::string& path)
 {
-    std::string path_file = receiveFileName(s1, path);
+    std::string file_name = receiveFileName(s1);
+    std::string path_file = path + "/" + file_name;
 
 // проверка существования файла
     struct stat st;
