@@ -152,18 +152,15 @@ int sendFile(int s1, const std::string& path)
         return 1;
     }
 
-//отправка клиенту кода команды отправки файла
-    uint8_t command_send = 130;
-    int res = send(s1, &command_send, sizeof(command_send), 0);
-    if (res < 0 || res != sizeof(command_send))
+    if (sendSuccess(s1))
     {
-        std::cerr << "Send call error command. " << strerror(errno) << "\n";
+        std::cerr << "Send error success.\n";
         return 1;
     }
 
 // определение длины файла
     struct stat st_buff;
-    res = stat(path_file.c_str(), &st_buff);
+    int res = stat(path_file.c_str(), &st_buff);
     if (res < 0)
     {
         std::cerr << "Stat call error. " << strerror(errno) << "\n";
@@ -172,19 +169,34 @@ int sendFile(int s1, const std::string& path)
 
     uint32_t filesize = st_buff.st_size;
 
+//открытие сервером файла
+    std::ifstream fin(path_file);
+    if (!fin)
+    {
+        std::string error_message = "File failed to open.";
+        if (sendError(s1, error_message))
+        {
+            std::cerr << "Send error message error.\n";
+            return 1;
+        }
+        std::cerr << path_file << "File not open.\n";
+        return 1;
+    }
+
+//отправка клиенту кода команды отправки файла
+    uint8_t command_send = 130;
+    res = send(s1, &command_send, sizeof(command_send), 0);
+    if (res < 0 || res != sizeof(command_send))
+    {
+        std::cerr << "Send call error command. " << strerror(errno) << "\n";
+        return 1;
+    }
+
 //отправка клиенту длины файла
     res = send(s1, &filesize, sizeof(filesize), 0);
     if (res < 0 || res != sizeof(filesize))
     {
         std::cerr << "Send call error file size. " << strerror(errno) << "\n";
-        return 1;
-    }
-
-//открытие сервером файла
-    std::ifstream fin(path_file);
-    if (!fin)
-    {
-        std::cerr << path_file << "File not open.\n";
         return 1;
     }
 
