@@ -152,12 +152,6 @@ int sendFile(int s1, const std::string& path)
         return 1;
     }
 
-    if (sendSuccess(s1))
-    {
-        std::cerr << "Send error success.\n";
-        return 1;
-    }
-
 // определение длины файла
     struct stat st_buff;
     int res = stat(path_file.c_str(), &st_buff);
@@ -259,6 +253,12 @@ int receiveFile(int s1, const std::string& path)
     std::ofstream fout(path_file);
     if (!fout)
     {
+        std::string error_message = "File failed to open.";
+        if (sendError(s1, error_message))
+        {
+            std::cerr << "Send error message error.\n";
+            return 1;
+        }
         std::cerr << path_file << "File not open.\n";
         return 1;
     }
