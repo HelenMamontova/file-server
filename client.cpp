@@ -113,7 +113,7 @@ int receiveFile(int s, const std::string& file_name)
         return 1;
     }
 
-// получение кода команды отправки файла сервером или кода ошибки
+// получение ответа сервера о существовании файла
     uint8_t command_recv;
     res = recv(s, &command_recv, sizeof(command_recv), 0);
     if (res < 0 || res != sizeof(command_recv))
@@ -127,43 +127,65 @@ int receiveFile(int s, const std::string& file_name)
         std::cerr << receiveError(s) << "\n";
         return 1;
     }
-    else if (command_recv == 130)
+    else if (command_recv == 129)
     {
-
-    // получение длины файла от сервера
-        uint32_t filesize;
-        res = recv(s, &filesize, sizeof(filesize), 0);
-        if (res < 0 || res != sizeof(filesize))
+        // получение кода команды отправки файла сервером или кода ошибки
+        uint8_t command_recv;
+        res = recv(s, &command_recv, sizeof(command_recv), 0);
+        if (res < 0 || res != sizeof(command_recv))
         {
-            std::cerr << "Recv call error filesize. " << strerror(errno) << "\n";
+            std::cerr << "Recv call error command. " << strerror(errno) << "\n";
             return 1;
         }
 
-    //открытие файла для записи
-        std::ofstream fout(file_name);
-        if (!fout)
+        if (command_recv == 128)
         {
-            std::cerr << file_name << "File not open.\n";
+            std::cerr << receiveError(s) << "\n";
             return 1;
         }
-
-    // получение содержимого буфера от сервера
-        size_t bytes_recv = 0;
-        while (bytes_recv < filesize)
+        else if (command_recv == 130)
         {
-            char buff[1024] = {0};
-            res = recv(s, buff, sizeof(buff), 0);
-            bytes_recv += res;
-            if (res < 0)
+
+        // получение длины файла от сервера
+            uint32_t filesize;
+            res = recv(s, &filesize, sizeof(filesize), 0);
+            if (res < 0 || res != sizeof(filesize))
             {
-                std::cerr << "Recv call error buff. " << strerror(errno) << "\n";
+                std::cerr << "Recv call error filesize. " << strerror(errno) << "\n";
                 return 1;
             }
 
-    // запись файла
-            fout.write(buff, res);
+        //открытие файла для записи
+            std::ofstream fout(file_name);
+            if (!fout)
+            {
+                std::cerr << file_name << "File not open.\n";
+                return 1;
+            }
+
+        // получение содержимого буфера от сервера
+            size_t bytes_recv = 0;
+            while (bytes_recv < filesize)
+            {
+                char buff[1024] = {0};
+                res = recv(s, buff, sizeof(buff), 0);
+                bytes_recv += res;
+                if (res < 0)
+                {
+                    std::cerr << "Recv call error buff. " << strerror(errno) << "\n";
+                    return 1;
+                }
+
+        // запись файла
+                fout.write(buff, res);
+            }
+            return 0;
         }
-        return 0;
+        else
+        {
+            std::cerr << "Unknown command: " << command_recv << "\n";
+            return 1;
+        }
     }
     else
     {
