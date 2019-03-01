@@ -234,6 +234,20 @@ int receiveFile(int s1, const std::string& path)
         return 1;
     }
 
+//открытие файла для записи
+    std::ofstream fout(path_file);
+    if (!fout)
+    {
+        std::string error_message = "File failed to open.";
+        if (sendError(s1, error_message))
+        {
+            std::cerr << "Send error message error.\n";
+            return 1;
+        }
+        std::cerr << path_file << "File not open.\n";
+        return 1;
+    }
+
     if (sendSuccess(s1))
     {
         std::cerr << "Send error success.\n";
@@ -246,20 +260,6 @@ int receiveFile(int s1, const std::string& path)
     if (res < 0 || res != sizeof(filesize))
     {
         std::cerr << "Recv call error filesize. " << strerror(errno) << "\n";
-        return 1;
-    }
-
-//открытие файла для записи
-    std::ofstream fout(path_file);
-    if (!fout)
-    {
-        std::string error_message = "File failed to open.";
-        if (sendError(s1, error_message))
-        {
-            std::cerr << "Send error message error.\n";
-            return 1;
-        }
-        std::cerr << path_file << "File not open.\n";
         return 1;
     }
 
