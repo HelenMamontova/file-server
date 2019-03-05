@@ -49,22 +49,12 @@ int sendError(int s1, std::string error_message)
         return 1;
     }
 
-// отправка клиенту длины сообщения
-    uint32_t error_message_len = error_message.length();
-    res = send(s1, &error_message_len, sizeof(error_message_len), 0);
-    if (res < 0 || res != sizeof(error_message_len))
+    if (sendString(s1, error_message))
     {
-        std::cerr << "Send call error error message length. " << strerror(errno) << "\n";
+        std::cerr << "Send string error_message error.\n";
         return 1;
     }
 
-// отправка клиенту ообщения об ошибке
-    res = send(s1, error_message.c_str(), error_message.length(), 0);
-    if (res < 0 || res != (int)error_message.length())
-    {
-        std::cerr << "Send call error error message. " << strerror(errno) << "\n";
-        return 1;
-    }
     return 0;
 }
 
