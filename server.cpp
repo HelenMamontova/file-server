@@ -85,22 +85,12 @@ int sendList(int s1, const std::string& path)
     }
     closedir(dir);
 
-// отправка клиенту длины списка файлов
-    uint32_t list_len = list.length();
-    res = send(s1, &list_len, sizeof(list_len), 0);
-    if (res < 0 || res != sizeof(list_len))
+    if (sendString(s1, list))
     {
-        std::cerr << "Send call error list length. " << strerror(errno) << "\n";
+        std::cerr << "Send string list error.\n";
         return 1;
     }
 
-// отправка клиенту списка файлов
-    res = send(s1, list.c_str(), list.length(), 0);
-    if (res < 0 || res != (int)list.length())
-    {
-        std::cerr << "Send call error file list. " << strerror(errno) << "\n";
-        return 1;
-    }
     return 0;
 }
 
