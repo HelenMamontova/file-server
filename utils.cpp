@@ -35,3 +35,22 @@ bool setAddress(const std::string& address, struct sockaddr_in* local)
 
     return true;
 }
+
+int sendString(int s, const std::string& str)
+{
+    uint32_t str_len = str.length();
+    int res = send(s, &str_len, sizeof(str_len), 0);
+    if (res < 0 || res != sizeof(str_len))
+    {
+        std::cerr << "Send call error string length. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+    res = send(s, str.c_str(), str.length(), 0);
+    if (res < 0 || res != (int)str.length())
+    {
+        std::cerr << "Send call error string. " << strerror(errno) << "\n";
+        return 1;
+    }
+    return 0;
+}
