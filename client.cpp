@@ -173,20 +173,9 @@ int sendFile(int s, const std::string& file_name)
         return 1;
     }
 
-// отправка серверу длины имени файла
-    uint32_t file_name_len = file_name.length();
-    res = send(s, &file_name_len, sizeof(file_name_len), 0);
-    if (res < 0 || res != sizeof(file_name_len))
+    if (sendString(s, file_name))
     {
-        std::cerr << "Send call error file name length. " << strerror(errno) << "\n";
-        return 1;
-    }
-
-// отправка серверу имени файла
-    res = send(s, file_name.c_str(), file_name.length(), 0);
-    if (res < 0 || res != (int)file_name.length())
-    {
-        std::cerr << "Send call error file name. " << strerror(errno) << "\n";
+        std::cerr << "Send string error.\n";
         return 1;
     }
 
