@@ -100,7 +100,7 @@ int receiveFile(int s, const std::string& file_name)
 
     if (sendString(s, file_name))
     {
-        std::cerr << "Send string error.\n";
+        std::cerr << "Send string file_name error.\n";
         return 1;
     }
 
@@ -175,7 +175,7 @@ int sendFile(int s, const std::string& file_name)
 
     if (sendString(s, file_name))
     {
-        std::cerr << "Send string error.\n";
+        std::cerr << "Send string file_name error.\n";
         return 1;
     }
 
