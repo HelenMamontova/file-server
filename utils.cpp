@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstring>
+#include <vector>
 #include <arpa/inet.h> //inet_aton
 
 #include "utils.h"
@@ -52,5 +53,28 @@ int sendString(int s, const std::string& str)
         std::cerr << "Send call error string. " << strerror(errno) << "\n";
         return 1;
     }
+    return 0;
+}
+
+int receiveString(int s, std::string& str_recv)
+{
+// получение клиентом длины строки
+    uint32_t str_len;
+    int res = recv(s, &str_len, sizeof(str_len), 0);
+    if (res < 0 || res != sizeof(str_len))
+    {
+        std::cerr << "Recv call error string length. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+// получение клиентом строки
+    std::vector <char> str(str_len);
+    res = recv(s, str.data(), str_len, 0);
+    if (res < 0 || res != (int)str_len)
+    {
+        std::cerr << "Recv call error string. " << strerror(errno) << "\n";
+        return 1;
+    }
+    str_recv.assign(str.begin(), str.end());
     return 0;
 }
