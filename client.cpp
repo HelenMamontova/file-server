@@ -25,23 +25,6 @@ void reference()
     std::cout << "--help, -h - show this text.\n";
 }
 
-std::string receiveError(int s)
-{
-// получение клиентом длины сообщения об ошибке
-    uint32_t error_message_len;
-    int res = recv(s, &error_message_len, sizeof(error_message_len), 0);
-    if (res < 0 || res != sizeof(error_message_len))
-        return "Recv call error error_message length. " + std::string(strerror(errno));
-
-// получение клиентом сообщения об ошибке
-    std::vector <char> error_message(error_message_len);
-    res = recv(s, error_message.data(), error_message_len, 0);
-    if (res < 0 || res != (int)error_message_len)
-        return "Recv call error error_message. " + std::string(strerror(errno));
-
-    return std::string(error_message.begin(), error_message.end());
-}
-
 int receiveList(int s)
 {
     uint8_t com = 2;
@@ -103,7 +86,13 @@ int receiveFile(int s, const std::string& file_name)
 
     if (command_recv == 128)
     {
-        std::cerr << receiveError(s) << "\n";
+        std::string error_message;
+        if (receiveString(s, error_message))
+        {
+            std::cerr << "Receive string error_message error.\n";
+            return 1;
+        }
+        std::cerr << error_message << "\n";
         return 1;
     }
     else if (command_recv == 130)
@@ -178,7 +167,13 @@ int sendFile(int s, const std::string& file_name)
 
     if (file_name_allow == 128)
     {
-        std::cerr << receiveError(s) << "\n";
+        std::string error_message;
+        if (receiveString(s, error_message))
+        {
+            std::cerr << "Receive string error_message error.\n";
+            return 1;
+        }
+        std::cerr << error_message << "\n";
         return 1;
     }
     else if (file_name_allow == 129)
@@ -241,7 +236,13 @@ int sendFile(int s, const std::string& file_name)
 
         if (state_file_write == 128)
         {
-            std:: cerr << receiveError(s) << "\n";
+            std::string error_message;
+            if (receiveString(s, error_message))
+            {
+                std::cerr << "Receive string error_message error.\n";
+                return 1;
+            }
+            std::cerr << error_message << "\n";
             return 1;
         }
         else if (state_file_write == 129)
