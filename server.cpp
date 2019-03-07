@@ -114,7 +114,12 @@ std::string receiveFileName(int s1)
 
 int sendFile(int s1, const std::string& path)
 {
-    std::string file_name = receiveFileName(s1);
+    std::string file_name;
+    if (receiveString(s1, file_name))
+    {
+        std::cerr << "Receive string file_name error.\n";
+        return 1;
+    }
     std::string path_file = path + "/" + file_name;
 
 // проверка существования файла
