@@ -66,24 +66,12 @@ int receiveList(int s)
         return 1;
     }
 
-// получение клиентом длины списка файлов
-    uint32_t list_len;
-    res = recv(s, &list_len, sizeof(list_len), 0);
-    if (res < 0 || res != sizeof(list_len))
+    std::string file_list;
+    if (receiveString(s, file_list))
     {
-        std::cerr << "Recv call error list length. " << strerror(errno) << "\n";
+        std::cerr << "Receive string list error.\n";
         return 1;
     }
-
-// получение клиентом списка файлов
-    std::vector <char> list(list_len);
-    res = recv(s, list.data(), list_len, 0);
-    if (res < 0 || res != (int)list_len)
-    {
-        std::cerr << "Recv call error list. " << strerror(errno) << "\n";
-        return 1;
-    }
-    std::string file_list(list.begin(), list.end());
     std::cout << file_list << "\n";
     return 0;
 }
