@@ -6,5 +6,6 @@
 
 bool setAddress(const std::string& address, struct sockaddr_in* local);
 int sendString(int s, const std::string& str);
+int receiveString(int s, std::string& str_recv);
 
 #endif
