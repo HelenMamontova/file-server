@@ -39,9 +39,9 @@ bool setAddress(const std::string& address, struct sockaddr_in* local)
 
 int sendString(int s, const std::string& str)
 {
-    uint32_t str_len = str.length();
-    int res = send(s, &str_len, sizeof(str_len), 0);
-    if (res < 0 || res != sizeof(str_len))
+    uint32_t length = str.length();
+    int res = send(s, &length, sizeof(length), 0);
+    if (res < 0 || res != sizeof(length))
     {
         std::cerr << "Send call error string length. " << strerror(errno) << "\n";
         return 1;
@@ -59,18 +59,18 @@ int sendString(int s, const std::string& str)
 int receiveString(int s, std::string& str_recv)
 {
 // получение клиентом длины строки
-    uint32_t str_len;
-    int res = recv(s, &str_len, sizeof(str_len), 0);
-    if (res < 0 || res != sizeof(str_len))
+    uint32_t length;
+    int res = recv(s, &length, sizeof(length), 0);
+    if (res < 0 || res != sizeof(length))
     {
         std::cerr << "Recv call error string length. " << strerror(errno) << "\n";
         return 1;
     }
 
 // получение клиентом строки
-    std::vector <char> str(str_len);
-    res = recv(s, str.data(), str_len, 0);
-    if (res < 0 || res != (int)str_len)
+    std::vector <char> str(length);
+    res = recv(s, str.data(), length, 0);
+    if (res < 0 || res != (int)length)
     {
         std::cerr << "Recv call error string. " << strerror(errno) << "\n";
         return 1;
