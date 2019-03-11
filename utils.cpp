@@ -37,18 +37,18 @@ bool setAddress(const std::string& address, struct sockaddr_in* local)
     return true;
 }
 
-int sendString(int s, const std::string& str)
+int sendString(int sock, const std::string& source)
 {
-    uint32_t length = str.length();
-    int res = send(s, &length, sizeof(length), 0);
+    uint32_t length = source.length();
+    int res = send(sock, &length, sizeof(length), 0);
     if (res < 0 || res != sizeof(length))
     {
         std::cerr << "Cannot send string length. " << strerror(errno) << "\n";
         return 1;
     }
 
-    res = send(s, str.c_str(), str.length(), 0);
-    if (res < 0 || res != (int)str.length())
+    res = send(sock, source.c_str(), source.length(), 0);
+    if (res < 0 || res != (int)source.length())
     {
         std::cerr << "Cannot send string data. " << strerror(errno) << "\n";
         return 1;
@@ -56,25 +56,23 @@ int sendString(int s, const std::string& str)
     return 0;
 }
 
-int receiveString(int s, std::string& str_recv)
+int receiveString(int sock, std::string& destination)
 {
-// получение клиентом длины строки
     uint32_t length;
-    int res = recv(s, &length, sizeof(length), 0);
+    int res = recv(sock, &length, sizeof(length), 0);
     if (res < 0 || res != sizeof(length))
     {
         std::cerr << "Cannot receive string length. " << strerror(errno) << "\n";
         return 1;
     }
 
-// получение клиентом строки
     std::vector<char> str(length);
-    res = recv(s, str.data(), length, 0);
+    res = recv(sock, str.data(), length, 0);
     if (res < 0 || res != (int)length)
     {
         std::cerr << "Cannot receive string data. " << strerror(errno) << "\n";
         return 1;
     }
-    str_recv.assign(str.begin(), str.end());
+    destination.assign(str.begin(), str.end());
     return 0;
 }
