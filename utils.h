@@ -5,7 +5,7 @@
 #include <netinet/in.h> //struct sockaddr_in
 
 bool setAddress(const std::string& address, struct sockaddr_in* local);
-int sendString(int s, const std::string& str);
-int receiveString(int s, std::string& str_recv);
+int sendString(int sock, const std::string& source);
+int receiveString(int sock, std::string& destination);
 
 #endif
