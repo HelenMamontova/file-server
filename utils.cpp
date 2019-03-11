@@ -43,14 +43,14 @@ int sendString(int s, const std::string& str)
     int res = send(s, &length, sizeof(length), 0);
     if (res < 0 || res != sizeof(length))
     {
-        std::cerr << "Send call error string length. " << strerror(errno) << "\n";
+        std::cerr << "Cannot send string length. " << strerror(errno) << "\n";
         return 1;
     }
 
     res = send(s, str.c_str(), str.length(), 0);
     if (res < 0 || res != (int)str.length())
     {
-        std::cerr << "Send call error string. " << strerror(errno) << "\n";
+        std::cerr << "Cannot send string data. " << strerror(errno) << "\n";
         return 1;
     }
     return 0;
@@ -63,16 +63,16 @@ int receiveString(int s, std::string& str_recv)
     int res = recv(s, &length, sizeof(length), 0);
     if (res < 0 || res != sizeof(length))
     {
-        std::cerr << "Recv call error string length. " << strerror(errno) << "\n";
+        std::cerr << "Cannot receive string length. " << strerror(errno) << "\n";
         return 1;
     }
 
 // получение клиентом строки
-    std::vector <char> str(length);
+    std::vector<char> str(length);
     res = recv(s, str.data(), length, 0);
     if (res < 0 || res != (int)length)
     {
-        std::cerr << "Recv call error string. " << strerror(errno) << "\n";
+        std::cerr << "Cannot receive string data. " << strerror(errno) << "\n";
         return 1;
     }
     str_recv.assign(str.begin(), str.end());
