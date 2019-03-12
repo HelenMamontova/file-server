@@ -120,15 +120,7 @@ int sendFile(int s1, const std::string& path)
     }
 
 // определение длины файла
-    struct stat st_buff;
-    int res = stat(path_file.c_str(), &st_buff);
-    if (res < 0)
-    {
-        std::cerr << "Stat call error. " << strerror(errno) << "\n";
-        return 1;
-    }
-
-    uint32_t filesize = st_buff.st_size;
+    uint32_t filesize = st.st_size;
 
 //открытие сервером файла
     std::ifstream fin(path_file);
@@ -146,7 +138,7 @@ int sendFile(int s1, const std::string& path)
 
 //отправка клиенту кода команды отправки файла
     uint8_t command_send = 130;
-    res = send(s1, &command_send, sizeof(command_send), 0);
+    int res = send(s1, &command_send, sizeof(command_send), 0);
     if (res < 0 || res != sizeof(command_send))
     {
         std::cerr << "Send call error command. " << strerror(errno) << "\n";
