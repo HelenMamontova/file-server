@@ -62,10 +62,9 @@ int sendList(int s1, const std::string& path)
 {
 //отправка клиенту кода команды отправки списка файлов
     uint8_t command_send = 131;
-    int res = send(s1, &command_send, sizeof(command_send), 0);
-    if (res < 0 || res != sizeof(command_send))
+    if (sendUint8(s1, command_send))
     {
-        std::cerr << "Send call error command. " << strerror(errno) << "\n";
+        std::cerr << "Send uint8_t command 131 error.\n";
         return 1;
     }
 
