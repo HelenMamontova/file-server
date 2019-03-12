@@ -3,9 +3,11 @@
 
 #include <string>
 #include <netinet/in.h> //struct sockaddr_in
+#include <cstdint> //uint8_t, uint32_t
 
 bool setAddress(const std::string& address, struct sockaddr_in* local);
 int sendString(int sock, const std::string& source);
 int receiveString(int sock, std::string& destination);
+int sendUint8(int sock, uint8_t command);
 
 #endif
