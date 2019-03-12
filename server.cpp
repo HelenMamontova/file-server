@@ -42,10 +42,9 @@ int sendError(int s1, std::string error_message)
 {
 //отправка клиенту кода ошибки открытия файла для записи
     uint8_t command_send = 128;
-    int res = send(s1, &command_send, sizeof(command_send), 0);
-    if (res < 0 || res != sizeof(command_send))
+    if (sendUint8(s1, command_send))
     {
-        std::cerr << "Send call error command. " << strerror(errno) << "\n";
+        std::cerr << "Send uint8_t command 128 error.\n";
         return 1;
     }
 
