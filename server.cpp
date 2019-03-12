@@ -137,15 +137,14 @@ int sendFile(int s1, const std::string& path)
 
 //отправка клиенту кода команды отправки файла
     uint8_t command_send = 130;
-    int res = send(s1, &command_send, sizeof(command_send), 0);
-    if (res < 0 || res != sizeof(command_send))
+    if (sendUint8(s1, command_send))
     {
-        std::cerr << "Send call error command. " << strerror(errno) << "\n";
+        std::cerr << "Send uint8_t command 130 error.\n";
         return 1;
     }
 
 //отправка клиенту длины файла
-    res = send(s1, &filesize, sizeof(filesize), 0);
+    int res = send(s1, &filesize, sizeof(filesize), 0);
     if (res < 0 || res != sizeof(filesize))
     {
         std::cerr << "Send call error file size. " << strerror(errno) << "\n";
