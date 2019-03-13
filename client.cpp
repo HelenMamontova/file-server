@@ -27,8 +27,7 @@ void reference()
 
 int receiveList(int s)
 {
-    uint8_t com = 2;
-    if (sendUint8(s, com))
+    if (sendUint8(s, 2))
     {
         std::cerr << "Send uint8_t command 2 error.\n";
         return 1;
@@ -60,8 +59,7 @@ int receiveList(int s)
 
 int receiveFile(int s, const std::string& file_name)
 {
-    uint8_t com = 0;
-    if (sendUint8(s, com))
+    if (sendUint8(s, 0))
     {
         std::cerr << "Send uint8_t command 0 error.\n";
         return 1;
@@ -137,8 +135,7 @@ int receiveFile(int s, const std::string& file_name)
 int sendFile(int s, const std::string& file_name)
 {
 //отправка серверу кода команды записи файла
-    uint8_t com = 1;
-    if (sendUint8(s, com))
+    if (sendUint8(s, 1))
     {
         std::cerr << "Send uint8_t command 1 error.\n";
         return 1;
