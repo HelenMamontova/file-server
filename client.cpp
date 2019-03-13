@@ -139,10 +139,9 @@ int sendFile(int s, const std::string& file_name)
 {
 //отправка серверу кода команды записи файла
     uint8_t com = 1;
-    int res = send(s, &com, sizeof(com), 0);
-    if (res < 0 || res != sizeof(com))
+    if (sendUint8(s, com))
     {
-        std::cerr << "Send call error command." << strerror(errno) << "\n";
+        std::cerr << "Send uint8_t command 1 error.\n";
         return 1;
     }
 
@@ -154,7 +153,7 @@ int sendFile(int s, const std::string& file_name)
 
 // получение разрешения или запрета для имени файла
     uint8_t file_name_allow;
-    res = recv(s, &file_name_allow, sizeof(file_name_allow), 0);
+    int res = recv(s, &file_name_allow, sizeof(file_name_allow), 0);
     if (res < 0 || res != sizeof(file_name_allow))
     {
         std::cerr << "Recv call error file_name_allow. " << strerror(errno) << "\n";
