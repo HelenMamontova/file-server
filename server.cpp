@@ -25,19 +25,6 @@ void reference()
     std::cout << "--help, -h - show this text.\n";
 }
 
-int sendSuccess(int s1)
-{
-//отправка клиенту кода команды успешной записи файла
-    uint8_t command_success = 129;
-    int res = send(s1, &command_success, sizeof(command_success), 0);
-    if (res < 0 || res != sizeof(command_success))
-    {
-        std::cerr << "Send call error command success. " << strerror(errno) << "\n";
-        return 1;
-    }
-    return 0;
-}
-
 int sendError(int s1, std::string error_message)
 {
 //отправка клиенту кода ошибки открытия файла для записи
@@ -53,7 +40,6 @@ int sendError(int s1, std::string error_message)
         std::cerr << "Send string error_message error.\n";
         return 1;
     }
-
     return 0;
 }
 
@@ -209,9 +195,11 @@ int receiveFile(int s1, const std::string& path)
         return 1;
     }
 
-    if (sendSuccess(s1))
+//отправка клиенту кода команды успешной записи файла
+    uint8_t command_success = 129;
+    if (sendUint8(s1, command_success))
     {
-        std::cerr << "Send error success.\n";
+        std::cerr << "Send uint8_t command 129 error.\n";
         return 1;
     }
 
@@ -247,6 +235,7 @@ int receiveFile(int s1, const std::string& path)
     }
 
 // отправка клиенту сообщения о состоянии записи файла
+// ошибка
     if (bytes_write < 0)
     {
         std::string error_message = "File write error.";
@@ -257,9 +246,10 @@ int receiveFile(int s1, const std::string& path)
         }
     }
 
-    if (sendSuccess(s1))
+// успех
+    if (sendUint8(s1, command_success))
     {
-        std::cerr << "Send error success.\n";
+        std::cerr << "Send uint8_t command 129 error.\n";
         return 1;
     }
     return 0;
