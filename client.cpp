@@ -28,16 +28,15 @@ void reference()
 int receiveList(int s)
 {
     uint8_t com = 2;
-    int res = send(s, &com, sizeof(com), 0);
-    if (res < 0 || res != sizeof(com))
+    if (sendUint8(s, com))
     {
-        std::cerr << "Send call error. " << strerror(errno) << "\n";
+        std::cerr << "Send uint8_t command 2 error.\n";
         return 1;
     }
 
 // получение кода команды отправки списка файлов сервером
     uint8_t command_recv;
-    res = recv(s, &command_recv, sizeof(command_recv), 0);
+    int res = recv(s, &command_recv, sizeof(command_recv), 0);
     if (res < 0 || res != sizeof(command_recv))
     {
         std::cerr << "Recv call error command. " << strerror(errno) << "\n";
