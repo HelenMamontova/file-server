@@ -92,8 +92,7 @@ int sendFile(int s1, const std::string& path)
     struct stat st;
     if (stat(path_file.c_str(), &st) < 0)
     {
-        std::string error_message = "File does not exists or does not have access.";
-        if (sendError(s1, error_message))
+        if (sendError(s1, "File does not exists or does not have access."))
         {
             std::cerr << "Send error message error.\n";
             return 1;
@@ -110,8 +109,7 @@ int sendFile(int s1, const std::string& path)
     std::ifstream fin(path_file);
     if (!fin)
     {
-        std::string error_message = "File failed to open.";
-        if (sendError(s1, error_message))
+        if (sendError(s1, "File failed to open."))
         {
             std::cerr << "Send error message error.\n";
             return 1;
@@ -170,8 +168,7 @@ int receiveFile(int s1, const std::string& path)
     struct stat st;
     if (stat(path_file.c_str(), &st) == 0)
     {
-        std::string error_message = "Such file already exists.";
-        if (sendError(s1, error_message))
+        if (sendError(s1, "Such file already exists."))
         {
             std::cerr << "Send error message error.\n";
             return 1;
@@ -185,8 +182,7 @@ int receiveFile(int s1, const std::string& path)
     std::ofstream fout(path_file);
     if (!fout)
     {
-        std::string error_message = "File failed to open.";
-        if (sendError(s1, error_message))
+        if (sendError(s1, "File failed to open."))
         {
             std::cerr << "Send error message error.\n";
             return 1;
@@ -238,8 +234,7 @@ int receiveFile(int s1, const std::string& path)
 // ошибка
     if (bytes_write < 0)
     {
-        std::string error_message = "File write error.";
-        if (sendError(s1, error_message))
+        if (sendError(s1, "File write error."))
         {
             std::cerr << "Send error message error.\n";
             return 1;
