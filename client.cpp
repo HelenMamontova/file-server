@@ -62,10 +62,9 @@ int receiveList(int s)
 int receiveFile(int s, const std::string& file_name)
 {
     uint8_t com = 0;
-    int res = send(s, &com, sizeof(com), 0);
-    if (res < 0 || res != sizeof(com))
+    if (sendUint8(s, com))
     {
-        std::cerr << "Send call error. " << strerror(errno) << "\n";
+        std::cerr << "Send uint8_t command 0 error.\n";
         return 1;
     }
 
@@ -77,7 +76,7 @@ int receiveFile(int s, const std::string& file_name)
 
 // получение ответа сервера о существовании файла
     uint8_t command_recv;
-    res = recv(s, &command_recv, sizeof(command_recv), 0);
+    int res = recv(s, &command_recv, sizeof(command_recv), 0);
     if (res < 0 || res != sizeof(command_recv))
     {
         std::cerr << "Recv call error command. " << strerror(errno) << "\n";
