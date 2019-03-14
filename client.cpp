@@ -34,14 +34,14 @@ int receiveList(int s)
     }
 
 // получение кода команды отправки списка файлов сервером
-    uint8_t command_recv;
-    int res = recv(s, &command_recv, sizeof(command_recv), 0);
-    if (res < 0 || res != sizeof(command_recv))
+    uint8_t command_list;
+    if (receiveUint8(s, command_list))
     {
-        std::cerr << "Recv call error command. " << strerror(errno) << "\n";
+        std::cerr << "Receive command_list  error.\n";
         return 1;
     }
-    if (command_recv != 131 )
+
+    if (command_list != 131 )
     {
         std:: cerr << "Wrong commad to send list." << "\n";
         return 1;
@@ -72,15 +72,14 @@ int receiveFile(int s, const std::string& file_name)
     }
 
 // получение ответа сервера о существовании файла
-    uint8_t command_recv;
-    int res = recv(s, &command_recv, sizeof(command_recv), 0);
-    if (res < 0 || res != sizeof(command_recv))
+    uint8_t command_file_exist;
+    if (receiveUint8(s, command_file_exist))
     {
-        std::cerr << "Recv call error command. " << strerror(errno) << "\n";
+        std::cerr << "Receive command_file_exist  error.\n";
         return 1;
     }
 
-    if (command_recv == 128)
+    if (command_file_exist == 128)
     {
         std::string error_message;
         if (receiveString(s, error_message))
@@ -91,14 +90,14 @@ int receiveFile(int s, const std::string& file_name)
         std::cerr << error_message << "\n";
         return 1;
     }
-    else if (command_recv != 130)
+    else if (command_file_exist != 130)
     {
-        std::cerr << "Unknown command: " << command_recv << "\n";
+        std::cerr << "Unknown command: " << command_file_exist << "\n";
         return 1;
     }
 // получение длины файла от сервера
     uint32_t filesize;
-    res = recv(s, &filesize, sizeof(filesize), 0);
+    int res = recv(s, &filesize, sizeof(filesize), 0);
     if (res < 0 || res != sizeof(filesize))
     {
         std::cerr << "Recv call error filesize. " << strerror(errno) << "\n";
