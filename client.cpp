@@ -148,10 +148,9 @@ int sendFile(int s, const std::string& file_name)
 
 // получение разрешения или запрета для имени файла
     uint8_t file_name_allow;
-    int res = recv(s, &file_name_allow, sizeof(file_name_allow), 0);
-    if (res < 0 || res != sizeof(file_name_allow))
+    if (receiveUint8(s, file_name_allow))
     {
-        std::cerr << "Recv call error file_name_allow. " << strerror(errno) << "\n";
+        std::cerr << "Receive file_name_allow  error.\n";
         return 1;
     }
 
@@ -174,7 +173,7 @@ int sendFile(int s, const std::string& file_name)
 
 // определение длины файла
     struct stat st_buff;
-    res = stat(file_name.c_str(), &st_buff);
+    int res = stat(file_name.c_str(), &st_buff);
     if (res < 0)
     {
         std::cerr << "Stat call error. " << strerror(errno) << "\n";
@@ -220,10 +219,9 @@ int sendFile(int s, const std::string& file_name)
 
 // получение кода состояния записи файла сервером
     uint8_t state_file_write;
-    res = recv(s, &state_file_write, sizeof(state_file_write), 0);
-    if (res < 0 || res != sizeof(state_file_write))
+    if (receiveUint8(s, state_file_write))
     {
-        std::cerr << "Recv call error state_file_write. " << strerror(errno) << "\n";
+        std::cerr << "Receive state_file_write  error.\n";
         return 1;
     }
 
