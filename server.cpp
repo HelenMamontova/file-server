@@ -30,7 +30,7 @@ int sendError(int s1, std::string error_message)
 //отправка клиенту кода ошибки открытия файла для записи
     if (sendUint8(s1, 128))
     {
-        std::cerr << "Send uint8_t command 128 error.\n";
+        std::cerr << "Send command 128 error.\n";
         return 1;
     }
 
@@ -47,7 +47,7 @@ int sendList(int s1, const std::string& path)
 //отправка клиенту кода команды отправки списка файлов
     if (sendUint8(s1, 131))
     {
-        std::cerr << "Send uint8_t command 131 error.\n";
+        std::cerr << "Send command 131 error.\n";
         return 1;
     }
 
@@ -119,7 +119,7 @@ int sendFile(int s1, const std::string& path)
 //отправка клиенту кода команды отправки файла
     if (sendUint8(s1, 130))
     {
-        std::cerr << "Send uint8_t command 130 error.\n";
+        std::cerr << "Send command 130 error.\n";
         return 1;
     }
 
@@ -191,7 +191,7 @@ int receiveFile(int s1, const std::string& path)
 //отправка клиенту кода команды успешной записи файла
     if (sendUint8(s1, 129))
     {
-        std::cerr << "Send uint8_t command 129 error.\n";
+        std::cerr << "Send command 129 error.\n";
         return 1;
     }
 
@@ -240,7 +240,7 @@ int receiveFile(int s1, const std::string& path)
 // успех
     if (sendUint8(s1, 129))
     {
-        std::cerr << "Send uint8_t command 129 error.\n";
+        std::cerr << "Send command 129 error.\n";
         return 1;
     }
     return 0;
