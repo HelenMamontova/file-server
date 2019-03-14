@@ -29,7 +29,7 @@ int receiveList(int s)
 {
     if (sendUint8(s, 2))
     {
-        std::cerr << "Send uint8_t command 2 error.\n";
+        std::cerr << "Send command 2 error.\n";
         return 1;
     }
 
@@ -61,7 +61,7 @@ int receiveFile(int s, const std::string& file_name)
 {
     if (sendUint8(s, 0))
     {
-        std::cerr << "Send uint8_t command 0 error.\n";
+        std::cerr << "Send command 0 error.\n";
         return 1;
     }
 
@@ -136,7 +136,7 @@ int sendFile(int s, const std::string& file_name)
 //отправка серверу кода команды записи файла
     if (sendUint8(s, 1))
     {
-        std::cerr << "Send uint8_t command 1 error.\n";
+        std::cerr << "Send command 1 error.\n";
         return 1;
     }
 
