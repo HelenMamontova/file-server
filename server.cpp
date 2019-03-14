@@ -334,10 +334,9 @@ int main(int argc, char* argv[])
         }
 
         uint8_t com;
-        int res =recv(s1, &com, sizeof(com), 0);
-        if (res < 0 || res != sizeof(com))
+        if (receiveUint8(s1, com))
         {
-            std::cerr << "Recv call error command main. " << strerror(errno) << "\n";
+            std::cerr << "Receive com error.\n";
             return 1;
         }
 
