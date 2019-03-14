@@ -87,3 +87,14 @@ int sendUint8(int sock, uint8_t command)
     }
     return 0;
 }
+
+int receiveUint8(int sock, uint8_t& command)
+{
+    int res = recv(sock, &command, sizeof(command), 0);
+    if (res < 0 || res != sizeof(command))
+    {
+        std::cerr << "Cannot receive command. " << strerror(errno) << "\n";
+        return 1;
+    }
+    return 0;
+}
