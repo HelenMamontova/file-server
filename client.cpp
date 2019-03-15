@@ -183,10 +183,9 @@ int sendFile(int s, const std::string& file_name)
     uint32_t filesize = st_buff.st_size;
 
 //отправка серверу длины файла
-    res = send(s, &filesize, sizeof(filesize), 0);
-    if (res < 0 || res != sizeof(filesize))
+    if (sendUint32(s, filesize))
     {
-        std::cerr << "Send call error file size. " << strerror(errno) << "\n";
+        std::cerr << "Send file length error.\n";
         return 1;
     }
 
