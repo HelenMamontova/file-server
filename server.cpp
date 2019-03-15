@@ -100,9 +100,6 @@ int sendFile(int s1, const std::string& path)
         return 1;
     }
 
-// определение длины файла
-    uint32_t filesize = st.st_size;
-
 //открытие сервером файла
     std::ifstream fin(path_file);
     if (!fin)
@@ -123,11 +120,13 @@ int sendFile(int s1, const std::string& path)
         return 1;
     }
 
+// определение длины файла
+    uint32_t filesize = st.st_size;
+
 //отправка клиенту длины файла
-    int res = send(s1, &filesize, sizeof(filesize), 0);
-    if (res < 0 || res != sizeof(filesize))
+    if (sendUint32(s1, filesize))
     {
-        std::cerr << "Send call error file size. " << strerror(errno) << "\n";
+        std::cerr << "Send file length error.\n";
         return 1;
     }
 
@@ -140,7 +139,7 @@ int sendFile(int s1, const std::string& path)
 // отправка содержимого буфера клиенту
         if (fin.gcount() > 0)
         {
-            res = send(s1, buff, fin.gcount(), 0);
+            int res = send(s1, buff, fin.gcount(), 0);
             if (res < 0 || res != (int)fin.gcount())
             {
                 std::cerr << "Send call error buff. " << strerror(errno) << "\n";
