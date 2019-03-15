@@ -98,3 +98,14 @@ int receiveUint8(int sock, uint8_t& command)
     }
     return 0;
 }
+
+int sendUint32(int sock, uint32_t filesize)
+{
+    int res = send(sock, &filesize, sizeof(filesize), 0);
+    if (res < 0 || res != sizeof(filesize))
+    {
+        std::cerr << "Cannot send file length. " << strerror(errno) << "\n";
+        return 1;
+    }
+    return 0;
+}
