@@ -109,3 +109,14 @@ int sendUint32(int sock, uint32_t filesize)
     }
     return 0;
 }
+
+int receiveUint32(int sock, uint32_t& filesize)
+{
+    int res = recv(sock, &filesize, sizeof(filesize), 0);
+    if (res < 0 || res != sizeof(filesize))
+    {
+        std::cerr << "Cannot receive file length. " << strerror(errno) << "\n";
+        return 1;
+    }
+    return 0;
+}
