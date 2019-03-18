@@ -28,9 +28,9 @@ void reference()
 int sendError(int s1, std::string error_message)
 {
 //отправка клиенту кода ошибки открытия файла для записи
-    if (sendUint8(s1, 128))
+    if (sendUint8(s1, ERROR))
     {
-        std::cerr << "Send command 128 error.\n";
+        std::cerr << "Send command ERROR error.\n";
         return 1;
     }
 
@@ -45,9 +45,9 @@ int sendError(int s1, std::string error_message)
 int sendList(int s1, const std::string& path)
 {
 //отправка клиенту кода команды отправки списка файлов
-    if (sendUint8(s1, 131))
+    if (sendUint8(s1, SEND_LIST))
     {
-        std::cerr << "Send command 131 error.\n";
+        std::cerr << "Send command SEND_LIST error.\n";
         return 1;
     }
 
@@ -114,9 +114,9 @@ int sendFile(int s1, const std::string& path)
     }
 
 //отправка клиенту кода команды отправки файла
-    if (sendUint8(s1, 130))
+    if (sendUint8(s1, SEND_FILE))
     {
-        std::cerr << "Send command 130 error.\n";
+        std::cerr << "Send command SEND_FILE error.\n";
         return 1;
     }
 
@@ -188,9 +188,9 @@ int receiveFile(int s1, const std::string& path)
     }
 
 //отправка клиенту кода команды успешной записи файла
-    if (sendUint8(s1, 129))
+    if (sendUint8(s1, SUCCESS))
     {
-        std::cerr << "Send command 129 error.\n";
+        std::cerr << "Send command SUCCESS error.\n";
         return 1;
     }
 
@@ -236,9 +236,9 @@ int receiveFile(int s1, const std::string& path)
     }
 
 // успех
-    if (sendUint8(s1, 129))
+    if (sendUint8(s1, SUCCESS))
     {
-        std::cerr << "Send command 129 error.\n";
+        std::cerr << "Send command SUCCESS error.\n";
         return 1;
     }
     return 0;
@@ -338,7 +338,7 @@ int main(int argc, char* argv[])
             return 1;
         }
 
-        if (com == 0)
+        if (com == GET)
         {
             if (sendFile(s1, path))
             {
@@ -346,7 +346,7 @@ int main(int argc, char* argv[])
                 return 1;
             }
         }
-        else if (com == 1)
+        else if (com == PUT)
         {
             if (receiveFile(s1, path))
             {
@@ -354,7 +354,7 @@ int main(int argc, char* argv[])
                 return 1;
             }
         }
-        else if (com == 2)
+        else if (com == LIST)
         {
             if (sendList(s1, path))
             {
