@@ -97,10 +97,9 @@ int receiveFile(int s, const std::string& file_name)
     }
 // получение длины файла от сервера
     uint32_t filesize;
-    int res = recv(s, &filesize, sizeof(filesize), 0);
-    if (res < 0 || res != sizeof(filesize))
+    if (receiveUint32(s, filesize))
     {
-        std::cerr << "Recv call error filesize. " << strerror(errno) << "\n";
+        std::cerr << "Receive file length error.\n";
         return 1;
     }
 
@@ -117,7 +116,7 @@ int receiveFile(int s, const std::string& file_name)
     while (bytes_recv < filesize)
     {
         char buff[1024] = {0};
-        res = recv(s, buff, sizeof(buff), 0);
+        int  res = recv(s, buff, sizeof(buff), 0);
         bytes_recv += res;
         if (res < 0)
         {
