@@ -27,9 +27,9 @@ void reference()
 
 int receiveList(int s)
 {
-    if (sendUint8(s, 2))
+    if (sendUint8(s, LIST))
     {
-        std::cerr << "Send command 2 error.\n";
+        std::cerr << "Send command LIST error.\n";
         return 1;
     }
 
@@ -41,7 +41,7 @@ int receiveList(int s)
         return 1;
     }
 
-    if (command_list != 131 )
+    if (command_list != SEND_LIST )
     {
         std:: cerr << "Wrong commad to send list." << "\n";
         return 1;
@@ -59,9 +59,9 @@ int receiveList(int s)
 
 int receiveFile(int s, const std::string& file_name)
 {
-    if (sendUint8(s, 0))
+    if (sendUint8(s, GET))
     {
-        std::cerr << "Send command 0 error.\n";
+        std::cerr << "Send command GET error.\n";
         return 1;
     }
 
@@ -79,7 +79,7 @@ int receiveFile(int s, const std::string& file_name)
         return 1;
     }
 
-    if (command_file_exist == 128)
+    if (command_file_exist == ERROR)
     {
         std::string error_message;
         if (receiveString(s, error_message))
@@ -90,7 +90,7 @@ int receiveFile(int s, const std::string& file_name)
         std::cerr << error_message << "\n";
         return 1;
     }
-    else if (command_file_exist != 130)
+    else if (command_file_exist != SEND_FILE)
     {
         std::cerr << "Unknown command: " << command_file_exist << "\n";
         return 1;
@@ -133,9 +133,9 @@ int receiveFile(int s, const std::string& file_name)
 int sendFile(int s, const std::string& file_name)
 {
 //отправка серверу кода команды записи файла
-    if (sendUint8(s, 1))
+    if (sendUint8(s, PUT))
     {
-        std::cerr << "Send command 1 error.\n";
+        std::cerr << "Send command PUT error.\n";
         return 1;
     }
 
@@ -153,7 +153,7 @@ int sendFile(int s, const std::string& file_name)
         return 1;
     }
 
-    if (file_name_allow == 128)
+    if (file_name_allow == ERROR)
     {
         std::string error_message;
         if (receiveString(s, error_message))
@@ -164,7 +164,7 @@ int sendFile(int s, const std::string& file_name)
         std::cerr << error_message << "\n";
         return 1;
     }
-    else if (file_name_allow != 129)
+    else if (file_name_allow != SUCCESS)
     {
         std::cerr << "Unknown command: " << file_name_allow << "\n";
         return 1;
@@ -223,7 +223,7 @@ int sendFile(int s, const std::string& file_name)
         return 1;
     }
 
-    if (state_file_write == 128)
+    if (state_file_write == ERROR)
     {
         std::string error_message;
         if (receiveString(s, error_message))
@@ -234,7 +234,7 @@ int sendFile(int s, const std::string& file_name)
         std::cerr << error_message << "\n";
         return 1;
     }
-    else if (state_file_write != 129)
+    else if (state_file_write != SUCCESS)
     {
         std::cerr << "Unknown command: " << state_file_write << "\n";
         return 1;
