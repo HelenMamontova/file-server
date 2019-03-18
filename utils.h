@@ -13,4 +13,6 @@ int receiveUint8(int sock, uint8_t& command);
 int sendUint32(int sock, uint32_t filesize);
 int receiveUint32(int sock, uint32_t& filesize);
 
+enum command {GET, PUT, LIST, ERROR = 128, SUCCESS, SEND_FILE, SEND_LIST};
+
 #endif
