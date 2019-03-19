@@ -27,7 +27,7 @@ void reference()
 
 int sendError(int s1, std::string error_message)
 {
-//отправка клиенту кода ошибки открытия файла для записи
+// send error code to open file for writing
     if (sendUint8(s1, ERROR))
     {
         std::cerr << "Send command ERROR error.\n";
@@ -44,14 +44,14 @@ int sendError(int s1, std::string error_message)
 
 int sendList(int s1, const std::string& path)
 {
-//отправка клиенту кода команды отправки списка файлов
+// sending code to send file list
     if (sendUint8(s1, SEND_LIST))
     {
         std::cerr << "Send command SEND_LIST error.\n";
         return 1;
     }
 
-//получение списка файлов
+// getting file list
     DIR *dir = opendir(path.c_str());
     if (dir == NULL)
     {
@@ -86,7 +86,7 @@ int sendFile(int s1, const std::string& path)
     }
     std::string path_file = path + "/" + file_name;
 
-// проверка существования файла
+// file existence check
     struct stat st;
     if (stat(path_file.c_str(), &st) < 0)
     {
@@ -100,7 +100,7 @@ int sendFile(int s1, const std::string& path)
         return 1;
     }
 
-//открытие сервером файла
+// open file
     std::ifstream fin(path_file);
     if (!fin)
     {
@@ -113,30 +113,30 @@ int sendFile(int s1, const std::string& path)
         return 1;
     }
 
-//отправка клиенту кода команды отправки файла
+// send code to send file
     if (sendUint8(s1, SEND_FILE))
     {
         std::cerr << "Send command SEND_FILE error.\n";
         return 1;
     }
 
-// определение длины файла
+// file length determination
     uint32_t filesize = st.st_size;
 
-//отправка клиенту длины файла
+// sending file length
     if (sendUint32(s1, filesize))
     {
         std::cerr << "Send file length error.\n";
         return 1;
     }
 
-// чтение файла в буфер
+// read file to buffer
     char buff[1024] = {0};
     while (!fin.eof())
     {
         fin.read(buff, 1024);
 
-// отправка содержимого буфера клиенту
+// sending buffer contents
         if (fin.gcount() > 0)
         {
             int res = send(s1, buff, fin.gcount(), 0);
@@ -160,7 +160,7 @@ int receiveFile(int s1, const std::string& path)
     }
     std::string path_file = path + "/" + file_name;
 
-// проверка существования файла
+// file existence check
     struct stat st;
     if (stat(path_file.c_str(), &st) == 0)
     {
@@ -174,7 +174,7 @@ int receiveFile(int s1, const std::string& path)
         return 1;
     }
 
-//открытие файла для записи
+// open file for writing
     std::ofstream fout(path_file);
     if (!fout)
     {
@@ -187,14 +187,13 @@ int receiveFile(int s1, const std::string& path)
         return 1;
     }
 
-//отправка клиенту кода команды успешной записи файла
     if (sendUint8(s1, SUCCESS))
     {
         std::cerr << "Send command SUCCESS error.\n";
         return 1;
     }
 
-// получение длины файла от клиента
+// getting file length from client
     uint32_t filesize;
     if (receiveUint32(s1, filesize))
     {
@@ -202,7 +201,7 @@ int receiveFile(int s1, const std::string& path)
         return 1;
     }
 
-// получение содержимого буфера от клиента
+// getting buffer contents from client
     size_t bytes_recv = 0;
     int bytes_write = 0;
     while (bytes_recv < filesize)
@@ -216,7 +215,7 @@ int receiveFile(int s1, const std::string& path)
             return 1;
         }
 
-// запись файла
+// write file
         if (!fout.write(buff, res))
         {
             bytes_write = -1;
@@ -224,8 +223,7 @@ int receiveFile(int s1, const std::string& path)
         }
     }
 
-// отправка клиенту сообщения о состоянии записи файла
-// ошибка
+// send the file write status code
     if (bytes_write < 0)
     {
         if (sendError(s1, "File write error."))
@@ -235,7 +233,6 @@ int receiveFile(int s1, const std::string& path)
         }
     }
 
-// успех
     if (sendUint8(s1, SUCCESS))
     {
         std::cerr << "Send command SUCCESS error.\n";
