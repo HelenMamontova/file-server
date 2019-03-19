@@ -33,7 +33,7 @@ int receiveList(int s)
         return 1;
     }
 
-// получение кода команды отправки списка файлов сервером
+// getting command to send the file list from server
     uint8_t command_list;
     if (receiveUint8(s, command_list))
     {
@@ -71,7 +71,7 @@ int receiveFile(int s, const std::string& file_name)
         return 1;
     }
 
-// получение ответа сервера о существовании файла
+// getting server response about file existence
     uint8_t command_file_exist;
     if (receiveUint8(s, command_file_exist))
     {
@@ -95,7 +95,7 @@ int receiveFile(int s, const std::string& file_name)
         std::cerr << "Unknown command: " << command_file_exist << "\n";
         return 1;
     }
-// получение длины файла от сервера
+// getting file length from server
     uint32_t filesize;
     if (receiveUint32(s, filesize))
     {
@@ -103,7 +103,7 @@ int receiveFile(int s, const std::string& file_name)
         return 1;
     }
 
-//открытие файла для записи
+// open file for writing
     std::ofstream fout(file_name);
     if (!fout)
     {
@@ -111,7 +111,7 @@ int receiveFile(int s, const std::string& file_name)
         return 1;
     }
 
-// получение содержимого буфера от сервера
+// getting buffer contents from server
     size_t bytes_recv = 0;
     while (bytes_recv < filesize)
     {
@@ -124,7 +124,7 @@ int receiveFile(int s, const std::string& file_name)
             return 1;
         }
 
-// запись файла
+// write file
         fout.write(buff, res);
     }
     return 0;
@@ -132,7 +132,7 @@ int receiveFile(int s, const std::string& file_name)
 
 int sendFile(int s, const std::string& file_name)
 {
-//отправка серверу кода команды записи файла
+// send file write command
     if (sendUint8(s, PUT))
     {
         std::cerr << "Send command PUT error.\n";
@@ -145,7 +145,7 @@ int sendFile(int s, const std::string& file_name)
         return 1;
     }
 
-// получение разрешения или запрета для имени файла
+// getting permission or prohibition for the file name
     uint8_t file_name_allow;
     if (receiveUint8(s, file_name_allow))
     {
@@ -170,7 +170,7 @@ int sendFile(int s, const std::string& file_name)
         return 1;
     }
 
-// определение длины файла
+// file length determination
     struct stat st_buff;
     int res = stat(file_name.c_str(), &st_buff);
     if (res < 0)
@@ -181,14 +181,14 @@ int sendFile(int s, const std::string& file_name)
 
     uint32_t filesize = st_buff.st_size;
 
-//отправка серверу длины файла
+// sending file length
     if (sendUint32(s, filesize))
     {
         std::cerr << "Send file length error.\n";
         return 1;
     }
 
-//открытие клиентом файла
+// open file
     std::ifstream fin(file_name);
     if (!fin)
     {
@@ -196,13 +196,13 @@ int sendFile(int s, const std::string& file_name)
         return 1;
     }
 
-// чтение файла в буфер
+// read file to buffer
     char buff[1024] = {0};
     while (!fin.eof())
     {
         fin.read(buff, 1024);
 
-// отправка содержимого буфера серверу
+// sending buffer contents
         if (fin.gcount() > 0)
         {
             res = send(s, buff, fin.gcount(), 0);
@@ -215,7 +215,7 @@ int sendFile(int s, const std::string& file_name)
 
     }
 
-// получение кода состояния записи файла сервером
+// getting the file write status code
     uint8_t state_file_write;
     if (receiveUint8(s, state_file_write))
     {
