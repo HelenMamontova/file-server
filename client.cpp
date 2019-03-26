@@ -149,7 +149,7 @@ int sendFile(int s, const std::string& file_name)
     uint8_t response_code;
     if (receiveUint8(s, response_code))
     {
-        std::cerr << "Receive response_code  error.\n";
+        std::cerr << "Receive response_code error.\n";
         return 1;
     }
 
@@ -216,14 +216,14 @@ int sendFile(int s, const std::string& file_name)
     }
 
 // getting the file write status code
-    uint8_t state_file_write;
-    if (receiveUint8(s, state_file_write))
+    uint8_t server_response;
+    if (receiveUint8(s, server_response))
     {
-        std::cerr << "Receive state_file_write  error.\n";
+        std::cerr << "Receive server_response error.\n";
         return 1;
     }
 
-    if (state_file_write == ERROR)
+    if (server_response == ERROR)
     {
         std::string error_message;
         if (receiveString(s, error_message))
@@ -234,9 +234,9 @@ int sendFile(int s, const std::string& file_name)
         std::cerr << error_message << "\n";
         return 1;
     }
-    else if (state_file_write != SUCCESS)
+    else if (server_response != SUCCESS)
     {
-        std::cerr << "Unknown command: " << state_file_write << "\n";
+        std::cerr << "Unknown command: " << server_response << "\n";
         return 1;
     }
     return 0;
