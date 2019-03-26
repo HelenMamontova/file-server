@@ -75,7 +75,7 @@ int receiveFile(int s, const std::string& file_name)
     uint8_t response_code;
     if (receiveUint8(s, response_code))
     {
-        std::cerr << "Receive response_code  error.\n";
+        std::cerr << "Receive response_code error.\n";
         return 1;
     }
 
@@ -117,7 +117,6 @@ int receiveFile(int s, const std::string& file_name)
     {
         char buff[1024] = {0};
         int  res = recv(s, buff, sizeof(buff), 0);
-        bytes_recv += res;
         if (res < 0)
         {
             std::cerr << "Recv call error buff. " << strerror(errno) << "\n";
@@ -126,6 +125,7 @@ int receiveFile(int s, const std::string& file_name)
 
 // write file
         fout.write(buff, res);
+        bytes_recv += res;
     }
     return 0;
 }
