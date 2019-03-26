@@ -34,14 +34,14 @@ int receiveList(int s)
     }
 
 // getting command to send the file list from server
-    uint8_t command_list;
-    if (receiveUint8(s, command_list))
+    uint8_t response_code;
+    if (receiveUint8(s, response_code))
     {
-        std::cerr << "Receive command_list  error.\n";
+        std::cerr << "Receive response_code  error.\n";
         return 1;
     }
 
-    if (command_list != SEND_LIST )
+    if (response_code != SEND_LIST )
     {
         std:: cerr << "Wrong commad to send list." << "\n";
         return 1;
@@ -72,14 +72,14 @@ int receiveFile(int s, const std::string& file_name)
     }
 
 // getting server response about file existence
-    uint8_t command_file_exist;
-    if (receiveUint8(s, command_file_exist))
+    uint8_t response_code;
+    if (receiveUint8(s, response_code))
     {
-        std::cerr << "Receive command_file_exist  error.\n";
+        std::cerr << "Receive response_code  error.\n";
         return 1;
     }
 
-    if (command_file_exist == ERROR)
+    if (response_code == ERROR)
     {
         std::string error_message;
         if (receiveString(s, error_message))
@@ -90,9 +90,9 @@ int receiveFile(int s, const std::string& file_name)
         std::cerr << error_message << "\n";
         return 1;
     }
-    else if (command_file_exist != SEND_FILE)
+    else if (response_code != SEND_FILE)
     {
-        std::cerr << "Unknown command: " << command_file_exist << "\n";
+        std::cerr << "Unknown command: " << response_code << "\n";
         return 1;
     }
 // getting file length from server
