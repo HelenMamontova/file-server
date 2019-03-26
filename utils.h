@@ -13,6 +13,6 @@ int receiveUint8(int sock, uint8_t& destination);
 int sendUint32(int sock, uint32_t source);
 int receiveUint32(int sock, uint32_t& destination);
 
-enum command {GET, PUT, LIST, ERROR = 128, SUCCESS, SEND_FILE, SEND_LIST};
+enum Command {GET = 0, PUT = 1, LIST = 2, ERROR = 128, SUCCESS = 129, SEND_FILE = 130, SEND_LIST = 131};
 
 #endif
