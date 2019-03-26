@@ -37,7 +37,7 @@ int receiveList(int s)
     uint8_t response_code;
     if (receiveUint8(s, response_code))
     {
-        std::cerr << "Receive response_code  error.\n";
+        std::cerr << "Receive response_code error.\n";
         return 1;
     }
 
@@ -146,14 +146,14 @@ int sendFile(int s, const std::string& file_name)
     }
 
 // getting permission or prohibition for the file name
-    uint8_t file_name_allow;
-    if (receiveUint8(s, file_name_allow))
+    uint8_t response_code;
+    if (receiveUint8(s, response_code))
     {
-        std::cerr << "Receive file_name_allow  error.\n";
+        std::cerr << "Receive response_code  error.\n";
         return 1;
     }
 
-    if (file_name_allow == ERROR)
+    if (response_code == ERROR)
     {
         std::string error_message;
         if (receiveString(s, error_message))
@@ -164,9 +164,9 @@ int sendFile(int s, const std::string& file_name)
         std::cerr << error_message << "\n";
         return 1;
     }
-    else if (file_name_allow != SUCCESS)
+    else if (response_code != SUCCESS)
     {
-        std::cerr << "Unknown command: " << file_name_allow << "\n";
+        std::cerr << "Unknown command: " << response_code << "\n";
         return 1;
     }
 
