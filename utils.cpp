@@ -77,32 +77,32 @@ int receiveString(int sock, std::string& destination)
     return 0;
 }
 
-int sendUint8(int sock, uint8_t command)
+int sendUint8(int sock, uint8_t source)
 {
-    int res = send(sock, &command, sizeof(command), 0);
-    if (res < 0 || res != sizeof(command))
+    int res = send(sock, &source, sizeof(source), 0);
+    if (res < 0 || res != sizeof(source))
     {
-        std::cerr << "Cannot send command. " << strerror(errno) << "\n";
+        std::cerr << "Cannot send source. " << strerror(errno) << "\n";
         return 1;
     }
     return 0;
 }
 
-int receiveUint8(int sock, uint8_t& command)
+int receiveUint8(int sock, uint8_t& destination)
 {
-    int res = recv(sock, &command, sizeof(command), 0);
-    if (res < 0 || res != sizeof(command))
+    int res = recv(sock, &destination, sizeof(destination), 0);
+    if (res < 0 || res != sizeof(destination))
     {
-        std::cerr << "Cannot receive command. " << strerror(errno) << "\n";
+        std::cerr << "Cannot receive destination. " << strerror(errno) << "\n";
         return 1;
     }
     return 0;
 }
 
-int sendUint32(int sock, uint32_t filesize)
+int sendUint32(int sock, uint32_t source)
 {
-    int res = send(sock, &filesize, sizeof(filesize), 0);
-    if (res < 0 || res != sizeof(filesize))
+    int res = send(sock, &source, sizeof(source), 0);
+    if (res < 0 || res != sizeof(source))
     {
         std::cerr << "Cannot send file length. " << strerror(errno) << "\n";
         return 1;
@@ -110,10 +110,10 @@ int sendUint32(int sock, uint32_t filesize)
     return 0;
 }
 
-int receiveUint32(int sock, uint32_t& filesize)
+int receiveUint32(int sock, uint32_t& destination)
 {
-    int res = recv(sock, &filesize, sizeof(filesize), 0);
-    if (res < 0 || res != sizeof(filesize))
+    int res = recv(sock, &destination, sizeof(destination), 0);
+    if (res < 0 || res != sizeof(destination))
     {
         std::cerr << "Cannot receive file length. " << strerror(errno) << "\n";
         return 1;
