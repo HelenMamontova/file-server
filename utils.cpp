@@ -82,7 +82,7 @@ int sendUint8(int sock, uint8_t source)
     int res = send(sock, &source, sizeof(source), 0);
     if (res < 0 || res != sizeof(source))
     {
-        std::cerr << "Cannot send source. " << strerror(errno) << "\n";
+        std::cerr << "Cannot send uint8_t data. " << strerror(errno) << "\n";
         return 1;
     }
     return 0;
@@ -93,7 +93,7 @@ int receiveUint8(int sock, uint8_t& destination)
     int res = recv(sock, &destination, sizeof(destination), 0);
     if (res < 0 || res != sizeof(destination))
     {
-        std::cerr << "Cannot receive destination. " << strerror(errno) << "\n";
+        std::cerr << "Cannot receive uint8_t data. " << strerror(errno) << "\n";
         return 1;
     }
     return 0;
@@ -104,7 +104,7 @@ int sendUint32(int sock, uint32_t source)
     int res = send(sock, &source, sizeof(source), 0);
     if (res < 0 || res != sizeof(source))
     {
-        std::cerr << "Cannot send file length. " << strerror(errno) << "\n";
+        std::cerr << "Cannot send uint32_t data. " << strerror(errno) << "\n";
         return 1;
     }
     return 0;
@@ -115,7 +115,7 @@ int receiveUint32(int sock, uint32_t& destination)
     int res = recv(sock, &destination, sizeof(destination), 0);
     if (res < 0 || res != sizeof(destination))
     {
-        std::cerr << "Cannot receive file length. " << strerror(errno) << "\n";
+        std::cerr << "Cannot receive uint32_t data. " << strerror(errno) << "\n";
         return 1;
     }
     return 0;
