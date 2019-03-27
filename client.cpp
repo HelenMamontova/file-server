@@ -33,7 +33,7 @@ int receiveList(int s)
         return 1;
     }
 
-// getting command to send the file list from server
+    // getting command to send the file list from server
     uint8_t response_code;
     if (receiveUint8(s, response_code))
     {
@@ -71,7 +71,7 @@ int receiveFile(int s, const std::string& file_name)
         return 1;
     }
 
-// getting server response about file existence
+    // getting server response about file existence
     uint8_t response_code;
     if (receiveUint8(s, response_code))
     {
@@ -95,7 +95,8 @@ int receiveFile(int s, const std::string& file_name)
         std::cerr << "Unknown command: " << response_code << "\n";
         return 1;
     }
-// getting file length from server
+
+    // getting file length from server
     uint32_t filesize;
     if (receiveUint32(s, filesize))
     {
@@ -103,15 +104,15 @@ int receiveFile(int s, const std::string& file_name)
         return 1;
     }
 
-// open file for writing
+    // open file for writing
     std::ofstream fout(file_name);
     if (!fout)
     {
-        std::cerr << file_name << "File not open.\n";
+        std::cerr << file_name << " File not open.\n";
         return 1;
     }
 
-// getting buffer contents from server
+    // getting buffer contents from server
     size_t bytes_recv = 0;
     while (bytes_recv < filesize)
     {
@@ -123,7 +124,7 @@ int receiveFile(int s, const std::string& file_name)
             return 1;
         }
 
-// write file
+    // write file
         fout.write(buff, res);
         bytes_recv += res;
     }
@@ -140,15 +141,15 @@ int sendFile(int s, const std::string& file_name)
         return 1;
     }
 
-// open file
+    // open file
     std::ifstream fin(file_name);
     if (!fin)
     {
-        std::cerr << file_name << "File not open.\n";
+        std::cerr << file_name << " File not open.\n";
         return 1;
     }
 
-// send file write command
+    // send file write command
     if (sendUint8(s, PUT))
     {
         std::cerr << "Send command PUT error.\n";
@@ -161,7 +162,7 @@ int sendFile(int s, const std::string& file_name)
         return 1;
     }
 
-// getting permission or prohibition for the file name
+    // getting permission or prohibition for the file name
     uint8_t response_code;
     if (receiveUint8(s, response_code))
     {
@@ -188,20 +189,20 @@ int sendFile(int s, const std::string& file_name)
 
     uint32_t filesize = st_buff.st_size;
 
-// sending file length
+    // sending file length
     if (sendUint32(s, filesize))
     {
         std::cerr << "Send file length error.\n";
         return 1;
     }
 
-// read file to buffer
+    // read file to buffer
     char buff[1024] = {0};
     while (!fin.eof())
     {
         fin.read(buff, 1024);
 
-// sending buffer contents
+    // sending buffer contents
         if (fin.gcount() > 0)
         {
             res = send(s, buff, fin.gcount(), 0);
@@ -214,7 +215,7 @@ int sendFile(int s, const std::string& file_name)
 
     }
 
-// getting the file write status code
+    // getting the file write status code
     uint8_t server_response;
     if (receiveUint8(s, server_response))
     {
