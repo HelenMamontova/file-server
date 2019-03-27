@@ -44,13 +44,6 @@ int sendError(int s1, std::string error_message)
 
 int sendList(int s1, const std::string& path)
 {
-// sending code to send file list
-    if (sendUint8(s1, SEND_LIST))
-    {
-        std::cerr << "Send command SEND_LIST error.\n";
-        return 1;
-    }
-
 // getting file list
     DIR *dir = opendir(path.c_str());
     if (dir == NULL)
@@ -66,6 +59,13 @@ int sendList(int s1, const std::string& path)
             list = list + entry->d_name + "\n";
     }
     closedir(dir);
+
+// sending code to send file list
+    if (sendUint8(s1, SEND_LIST))
+    {
+        std::cerr << "Send command SEND_LIST error.\n";
+        return 1;
+    }
 
     if (sendString(s1, list))
     {
