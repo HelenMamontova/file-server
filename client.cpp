@@ -132,6 +132,22 @@ int receiveFile(int s, const std::string& file_name)
 
 int sendFile(int s, const std::string& file_name)
 {
+    struct stat st_buff;
+    int res = stat(file_name.c_str(), &st_buff);
+    if (res < 0)
+    {
+        std::cerr << "Stat call error. " << strerror(errno) << "\n";
+        return 1;
+    }
+
+// open file
+    std::ifstream fin(file_name);
+    if (!fin)
+    {
+        std::cerr << file_name << "File not open.\n";
+        return 1;
+    }
+
 // send file write command
     if (sendUint8(s, PUT))
     {
@@ -170,29 +186,12 @@ int sendFile(int s, const std::string& file_name)
         return 1;
     }
 
-// file length determination
-    struct stat st_buff;
-    int res = stat(file_name.c_str(), &st_buff);
-    if (res < 0)
-    {
-        std::cerr << "Stat call error. " << strerror(errno) << "\n";
-        return 1;
-    }
-
     uint32_t filesize = st_buff.st_size;
 
 // sending file length
     if (sendUint32(s, filesize))
     {
         std::cerr << "Send file length error.\n";
-        return 1;
-    }
-
-// open file
-    std::ifstream fin(file_name);
-    if (!fin)
-    {
-        std::cerr << file_name << "File not open.\n";
         return 1;
     }
 
