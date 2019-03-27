@@ -27,7 +27,7 @@ void reference()
 
 int sendError(int s1, std::string error_message)
 {
-// send error code to open file for writing
+    // send error code to open file for writing
     if (sendUint8(s1, ERROR))
     {
         std::cerr << "Send command ERROR error.\n";
@@ -44,7 +44,7 @@ int sendError(int s1, std::string error_message)
 
 int sendList(int s1, const std::string& path)
 {
-// getting file list
+    // getting file list
     DIR *dir = opendir(path.c_str());
     if (dir == NULL)
     {
@@ -60,7 +60,7 @@ int sendList(int s1, const std::string& path)
     }
     closedir(dir);
 
-// sending code to send file list
+    // sending code to send file list
     if (sendUint8(s1, SEND_LIST))
     {
         std::cerr << "Send command SEND_LIST error.\n";
@@ -86,7 +86,7 @@ int sendFile(int s1, const std::string& path)
     }
     std::string path_file = path + "/" + file_name;
 
-// file existence check
+    // file existence check
     struct stat st;
     if (stat(path_file.c_str(), &st) < 0)
     {
@@ -100,7 +100,7 @@ int sendFile(int s1, const std::string& path)
         return 1;
     }
 
-// open file
+    // open file
     std::ifstream fin(path_file);
     if (!fin)
     {
@@ -109,34 +109,34 @@ int sendFile(int s1, const std::string& path)
             std::cerr << "Send error message error.\n";
             return 1;
         }
-        std::cerr << path_file << "File not open.\n";
+        std::cerr << path_file << " File not open.\n";
         return 1;
     }
 
-// send code to send file
+    // send code to send file
     if (sendUint8(s1, SEND_FILE))
     {
         std::cerr << "Send command SEND_FILE error.\n";
         return 1;
     }
 
-// file length determination
+    // file length determination
     uint32_t filesize = st.st_size;
 
-// sending file length
+    // sending file length
     if (sendUint32(s1, filesize))
     {
         std::cerr << "Send file length error.\n";
         return 1;
     }
 
-// read file to buffer
+    // read file to buffer
     char buff[1024] = {0};
     while (!fin.eof())
     {
         fin.read(buff, 1024);
 
-// sending buffer contents
+    // sending buffer contents
         if (fin.gcount() > 0)
         {
             int res = send(s1, buff, fin.gcount(), 0);
@@ -160,7 +160,7 @@ int receiveFile(int s1, const std::string& path)
     }
     std::string path_file = path + "/" + file_name;
 
-// file existence check
+    // file existence check
     struct stat st;
     if (stat(path_file.c_str(), &st) == 0)
     {
@@ -174,7 +174,7 @@ int receiveFile(int s1, const std::string& path)
         return 1;
     }
 
-// open file for writing
+    // open file for writing
     std::ofstream fout(path_file);
     if (!fout)
     {
@@ -193,7 +193,7 @@ int receiveFile(int s1, const std::string& path)
         return 1;
     }
 
-// getting file length from client
+    // getting file length from client
     uint32_t filesize;
     if (receiveUint32(s1, filesize))
     {
@@ -201,7 +201,7 @@ int receiveFile(int s1, const std::string& path)
         return 1;
     }
 
-// getting buffer contents from client
+    // getting buffer contents from client
     size_t bytes_recv = 0;
     int bytes_write = 0;
     while (bytes_recv < filesize)
@@ -215,7 +215,7 @@ int receiveFile(int s1, const std::string& path)
             return 1;
         }
 
-// write file
+    // write file
         if (!fout.write(buff, res))
         {
             bytes_write = -1;
@@ -223,7 +223,7 @@ int receiveFile(int s1, const std::string& path)
         }
     }
 
-// send the file write status code
+    // send the file write status code
     if (bytes_write < 0)
     {
         if (sendError(s1, "File write error."))
