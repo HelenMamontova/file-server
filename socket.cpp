@@ -29,3 +29,18 @@ int Socket::listenSocket(int n)
     return listen(s, n);
 }
 
+
+int sendSocket(const void *buf, size_t len, int n)
+{
+    return send(s, buf, len, n);
+}
+
+int recvSocket(void *buf, size_t len, int n)
+{
+    return recv(s, buf, len, n);
+}
+
+int connectSocket(const sockaddr_in &addr, size_t addrlen)
+{
+    return connect(s, (const sockaddr*) &addr, addrlen);
+}
