@@ -13,6 +13,7 @@
 #include <unistd.h> //close
 
 #include "utils.h"
+#include "socket.h"
 
 void reference()
 {
@@ -290,12 +291,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    int s = socket(AF_INET, SOCK_STREAM, 0);
-    if (s < 0)
-    {
-        std::cerr << "Socket call error. " << strerror(errno) << "\n";
-        return 1;
-    }
+    Socket serverSocket;
 
     struct sockaddr_in local;
 
@@ -305,17 +301,9 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    if (bind(s, (struct sockaddr*) &local, sizeof(local)))
-    {
-        std::cerr << "Bind call error. " << strerror(errno) << "\n";
-        return 1;
-    }
+    serverSocket.bindSocket(local, sizeof(local));
 
-    if (listen(s, 5))
-    {
-        std::cerr << "Listen call error. " << strerror(errno) << "\n";
-        return 1;
-    }
+    serverSocket.listenSocket(5);
 
     while (true)
     {
