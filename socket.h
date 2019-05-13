@@ -5,7 +5,6 @@ class Socket
 {
     private:
     int s;
-    int s1;
     Socket(const Socket&);
     Socket operator = (const Socket&);
 
@@ -15,6 +14,9 @@ class Socket
 
     int bindSocket(const sockaddr_in &addr, size_t addrlen);
     int listenSocket(int n);
+    int sendSocket(const void *buf, size_t len, int n);
+    int recvSocket(void *buf, size_t len, int n);
+    int connectSocket(const sockaddr_in &addr, size_t addrlen);
 };
 
 #endif
