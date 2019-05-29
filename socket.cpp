@@ -14,9 +14,33 @@ Socket::Socket()
     s = socket(AF_INET, SOCK_STREAM, 0);
 }
 
+Socket::Socket(int fd)
+{
+    s = fd;
+}
+
 Socket::~Socket()
 {
     close(s);
+}
+
+// move constructor
+Socket::Socket(Socket&& other)
+    : s(0)
+{
+    s = other.s;
+    other.s = 0;
+}
+
+// move asignment operator
+Socket& Socket::operator = (Socket&& other)
+{
+    if (this != &other)
+    {
+        s = other.s;
+        other.s = 0;
+    }
+    return *this;
 }
 
 int Socket::bindSocket(const sockaddr_in &addr, size_t addrlen)
@@ -30,17 +54,22 @@ int Socket::listenSocket(int n)
 }
 
 
-int sendSocket(const void *buf, size_t len, int n)
+int Socket::sendSocket(const void *buf, size_t len, int n)
 {
     return send(s, buf, len, n);
 }
 
-int recvSocket(void *buf, size_t len, int n)
+int Socket::recvSocket(void *buf, size_t len, int n)
 {
     return recv(s, buf, len, n);
 }
 
-int connectSocket(const sockaddr_in &addr, size_t addrlen)
+int Socket::connectSocket(const sockaddr_in &addr, size_t addrlen)
 {
     return connect(s, (const sockaddr*) &addr, addrlen);
+}
+
+Socket Socket::acceptSocket(const sockaddr_in &addr, int addrlen)
+{
+    return Socket(accept(s, (sockaddr*) &addr, (socklen_t*) &addrlen));
 }
