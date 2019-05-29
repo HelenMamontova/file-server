@@ -37,17 +37,17 @@ bool setAddress(const std::string& address, struct sockaddr_in* local)
     return true;
 }
 
-int sendString(int sock, const std::string& source)
+int sendString(Socket& sock, const std::string& source)
 {
     uint32_t length = source.length();
-    int res = send(sock, &length, sizeof(length), 0);
+    int res = sock.sendSocket(&length, sizeof(length), 0);
     if (res < 0 || res != sizeof(length))
     {
         std::cerr << "Cannot send string length. " << strerror(errno) << "\n";
         return 1;
     }
 
-    res = send(sock, source.c_str(), source.length(), 0);
+    res = sock.sendSocket(source.c_str(), source.length(), 0);
     if (res < 0 || res != (int)source.length())
     {
         std::cerr << "Cannot send string data. " << strerror(errno) << "\n";
@@ -56,10 +56,10 @@ int sendString(int sock, const std::string& source)
     return 0;
 }
 
-int receiveString(int sock, std::string& destination)
+int receiveString(Socket& sock, std::string& destination)
 {
     uint32_t length;
-    int res = recv(sock, &length, sizeof(length), 0);
+    int res = sock.recvSocket(&length, sizeof(length), 0);
     if (res < 0 || res != sizeof(length))
     {
         std::cerr << "Cannot receive string length. " << strerror(errno) << "\n";
@@ -67,7 +67,7 @@ int receiveString(int sock, std::string& destination)
     }
 
     std::vector<char> str(length);
-    res = recv(sock, str.data(), length, 0);
+    res = sock.recvSocket(str.data(), length, 0);
     if (res < 0 || res != (int)length)
     {
         std::cerr << "Cannot receive string data. " << strerror(errno) << "\n";
@@ -77,9 +77,9 @@ int receiveString(int sock, std::string& destination)
     return 0;
 }
 
-int sendUint8(int sock, uint8_t source)
+int sendUint8(Socket& sock, uint8_t source)
 {
-    int res = send(sock, &source, sizeof(source), 0);
+    int res = sock.sendSocket(&source, sizeof(source), 0);
     if (res < 0 || res != sizeof(source))
     {
         std::cerr << "Cannot send uint8_t data. " << strerror(errno) << "\n";
@@ -88,9 +88,9 @@ int sendUint8(int sock, uint8_t source)
     return 0;
 }
 
-int receiveUint8(int sock, uint8_t& destination)
+int receiveUint8(Socket& sock, uint8_t& destination)
 {
-    int res = recv(sock, &destination, sizeof(destination), 0);
+    int res = sock.recvSocket(&destination, sizeof(destination), 0);
     if (res < 0 || res != sizeof(destination))
     {
         std::cerr << "Cannot receive uint8_t data. " << strerror(errno) << "\n";
@@ -99,9 +99,9 @@ int receiveUint8(int sock, uint8_t& destination)
     return 0;
 }
 
-int sendUint32(int sock, uint32_t source)
+int sendUint32(Socket& sock, uint32_t source)
 {
-    int res = send(sock, &source, sizeof(source), 0);
+    int res = sock.sendSocket(&source, sizeof(source), 0);
     if (res < 0 || res != sizeof(source))
     {
         std::cerr << "Cannot send uint32_t data. " << strerror(errno) << "\n";
@@ -110,9 +110,9 @@ int sendUint32(int sock, uint32_t source)
     return 0;
 }
 
-int receiveUint32(int sock, uint32_t& destination)
+int receiveUint32(Socket& sock, uint32_t& destination)
 {
-    int res = recv(sock, &destination, sizeof(destination), 0);
+    int res = sock.recvSocket(&destination, sizeof(destination), 0);
     if (res < 0 || res != sizeof(destination))
     {
         std::cerr << "Cannot receive uint32_t data. " << strerror(errno) << "\n";
