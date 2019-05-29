@@ -26,7 +26,7 @@ void reference()
     std::cout << "--help, -h - show this text.\n";
 }
 
-int sendError(int s1, std::string error_message)
+int sendError(Socket& s1, std::string error_message)
 {
     // send error code to open file for writing
     if (sendUint8(s1, ERROR))
@@ -43,7 +43,7 @@ int sendError(int s1, std::string error_message)
     return 0;
 }
 
-int sendList(int s1, const std::string& path)
+int sendList(Socket& s1, const std::string& path)
 {
     // getting file list
     DIR *dir = opendir(path.c_str());
@@ -77,7 +77,7 @@ int sendList(int s1, const std::string& path)
     return 0;
 }
 
-int sendFile(int s1, const std::string& path)
+int sendFile(Socket& s1, const std::string& path)
 {
     std::string file_name;
     if (receiveString(s1, file_name))
@@ -140,7 +140,7 @@ int sendFile(int s1, const std::string& path)
     // sending buffer contents
         if (fin.gcount() > 0)
         {
-            int res = send(s1, buff, fin.gcount(), 0);
+            int res = s1.sendSocket(buff, fin.gcount(), 0);
             if (res < 0 || res != (int)fin.gcount())
             {
                 std::cerr << "Send call error buff. " << strerror(errno) << "\n";
@@ -151,7 +151,7 @@ int sendFile(int s1, const std::string& path)
     return 0;
 }
 
-int receiveFile(int s1, const std::string& path)
+int receiveFile(Socket& s1, const std::string& path)
 {
     std::string file_name;
     if (receiveString(s1, file_name))
@@ -208,7 +208,7 @@ int receiveFile(int s1, const std::string& path)
     while (bytes_recv < filesize)
     {
         char buff[1024] = {0};
-        int res = recv(s1, buff, sizeof(buff), 0);
+        int res = s1.recvSocket(buff, sizeof(buff), 0);
         bytes_recv += res;
         if (res < 0)
         {
@@ -309,12 +309,8 @@ int main(int argc, char* argv[])
     {
         struct sockaddr_in peer;
         int peerlen = sizeof(peer);
-        int s1 = accept(s, (struct sockaddr*) &peer, (socklen_t*) &peerlen);
-        if (s1 < 0)
-        {
-            std::cerr << "Accept call error. " << strerror(errno) << "\n";
-            return 1;
-        }
+
+        Socket s1 = serverSocket.acceptSocket(peer, peerlen);
 
         uint8_t com;
         if (receiveUint8(s1, com))
@@ -347,7 +343,6 @@ int main(int argc, char* argv[])
                 return 1;
             }
         }
-        close(s1);
     }
     return 0;
 }
