@@ -11,6 +11,7 @@
 #include <errno.h>
 
 #include "utils.h"
+#include "socket.h"
 
 void reference()
 {
@@ -25,7 +26,7 @@ void reference()
     std::cout << "--help, -h - show this text.\n";
 }
 
-int receiveList(int s)
+int receiveList(Socket& s)
 {
     if (sendUint8(s, LIST))
     {
@@ -57,7 +58,7 @@ int receiveList(int s)
     return 0;
 }
 
-int receiveFile(int s, const std::string& file_name)
+int receiveFile(Socket& s, const std::string& file_name)
 {
     if (sendUint8(s, GET))
     {
@@ -117,7 +118,7 @@ int receiveFile(int s, const std::string& file_name)
     while (bytes_recv < filesize)
     {
         char buff[1024] = {0};
-        int  res = recv(s, buff, sizeof(buff), 0);
+        int  res = s.recvSocket(buff, sizeof(buff), 0);
         if (res < 0)
         {
             std::cerr << "Recv call error buff. " << strerror(errno) << "\n";
@@ -131,7 +132,7 @@ int receiveFile(int s, const std::string& file_name)
     return 0;
 }
 
-int sendFile(int s, const std::string& file_name)
+int sendFile(Socket& s, const std::string& file_name)
 {
     struct stat st_buff;
     int res = stat(file_name.c_str(), &st_buff);
@@ -205,14 +206,13 @@ int sendFile(int s, const std::string& file_name)
     // sending buffer contents
         if (fin.gcount() > 0)
         {
-            res = send(s, buff, fin.gcount(), 0);
+            res = s.sendSocket(buff, fin.gcount(), 0);
             if (res < 0 || res != (int)fin.gcount())
             {
                 std::cerr << "Send call error buff. " << strerror(errno) << "\n";
                 return 1;
             }
         }
-
     }
 
     // getting the file write status code
@@ -307,12 +307,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    int s = socket(AF_INET, SOCK_STREAM, 0);
-    if (s < 0)
-    {
-        std::cerr << "Socket call error. " << strerror(errno) << "\n";
-        return 1;
-    }
+    Socket s;
 
     struct sockaddr_in peer;
 
@@ -322,11 +317,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    if (connect(s, (struct sockaddr*) &peer, sizeof(peer)))
-    {
-        std::cerr << "Connect call error. " << strerror(errno) << "\n";
-        return 1;
-    }
+    s.connectSocket(peer, sizeof(peer));
 
     if (command == "get")
     {
