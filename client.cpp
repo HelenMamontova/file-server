@@ -118,7 +118,7 @@ int receiveFile(Socket& s, const std::string& file_name)
     while (bytes_recv < filesize)
     {
         char buff[1024] = {0};
-        int  res = s.recvSocket(buff, sizeof(buff), 0);
+        int  res = s.recv(buff, sizeof(buff), 0);
         if (res < 0)
         {
             std::cerr << "Recv call error buff. " << strerror(errno) << "\n";
@@ -206,7 +206,7 @@ int sendFile(Socket& s, const std::string& file_name)
     // sending buffer contents
         if (fin.gcount() > 0)
         {
-            res = s.sendSocket(buff, fin.gcount(), 0);
+            res = s.send(buff, fin.gcount(), 0);
             if (res < 0 || res != (int)fin.gcount())
             {
                 std::cerr << "Send call error buff. " << strerror(errno) << "\n";
@@ -317,7 +317,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    s.connectSocket(peer, sizeof(peer));
+    s.connect(peer, sizeof(peer));
 
     if (command == "get")
     {
