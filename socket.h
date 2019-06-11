@@ -3,12 +3,12 @@
 
 class Socket
 {
-    private:
+private:
     int s;
     Socket(const Socket&);
-    Socket operator = (const Socket&);
+    Socket& operator = (const Socket&);
 
-    public:
+public:
     Socket();
     ~Socket();
 
