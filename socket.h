@@ -1,6 +1,9 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
+#include <netinet/in.h> //struct sockaddr_in
+#include <linux/in.h> //struct sockaddr_in
+
 class Socket
 {
 private:
