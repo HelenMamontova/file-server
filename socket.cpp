@@ -1,9 +1,7 @@
-#include <iostream>
 #include <sys/types.h> //socket, bind
 #include <sys/socket.h> //socket, bind, accept, listen
 #include <netinet/in.h> //struct sockaddr_in
 #include <linux/in.h> //struct sockaddr_in
-#include <errno.h>
 #include <unistd.h> //close
 
 #include "socket.h"
