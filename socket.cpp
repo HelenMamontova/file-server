@@ -46,30 +46,30 @@ Socket& Socket::operator = (Socket&& other)
 
 int Socket::bind(const sockaddr_in &addr, size_t addrlen)
 {
-    return bind(s, (const sockaddr*) &addr, addrlen);
+    return ::bind(s, (const sockaddr*) &addr, addrlen);
 }
 
 int Socket::listen(int n)
 {
-    return listen(s, n);
+    return ::listen(s, n);
 }
 
 int Socket::send(const void *buf, size_t len, int n)
 {
-    return send(s, buf, len, n);
+    return ::send(s, buf, len, n);
 }
 
 int Socket::recv(void *buf, size_t len, int n)
 {
-    return recv(s, buf, len, n);
+    return ::recv(s, buf, len, n);
 }
 
 int Socket::connect(const sockaddr_in &addr, size_t addrlen)
 {
-    return connect(s, (const sockaddr*) &addr, addrlen);
+    return ::connect(s, (const sockaddr*) &addr, addrlen);
 }
 
 Socket Socket::accept(const sockaddr_in &addr, int addrlen)
 {
-    return Socket(accept(s, (sockaddr*) &addr, (socklen_t*) &addrlen));
+    return Socket(::accept(s, (sockaddr*) &addr, (socklen_t*) &addrlen));
 }
