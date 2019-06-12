@@ -10,13 +10,13 @@
 
 
 Socket::Socket()
+    : m_var(socket(AF_INET, SOCK_STREAM, 0))
 {
-    m_var = socket(AF_INET, SOCK_STREAM, 0);
 }
 
 Socket::Socket(int fd)
+    : m_var(fd)
 {
-    m_var = fd;
 }
 
 Socket::~Socket()
