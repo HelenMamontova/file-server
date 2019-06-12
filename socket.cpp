@@ -1,11 +1,8 @@
-#include <sys/types.h> //socket, bind
-#include <sys/socket.h> //socket, bind, accept, listen
-#include <netinet/in.h> //struct sockaddr_in
-#include <linux/in.h> //struct sockaddr_in
-#include <unistd.h> //close
-
 #include "socket.h"
 
+#include <sys/types.h> //socket, bind
+#include <sys/socket.h> //socket, bind, accept, listen
+#include <unistd.h> //close
 
 Socket::Socket()
     : m_var(socket(AF_INET, SOCK_STREAM, 0))
