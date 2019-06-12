@@ -4,7 +4,7 @@
 class Socket
 {
 private:
-    int s;
+    int m_var;
     Socket(const Socket&);
     Socket& operator = (const Socket&);
 
