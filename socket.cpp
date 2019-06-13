@@ -64,7 +64,7 @@ int Socket::connect(const sockaddr_in &addr, size_t addrlen)
     return ::connect(m_var, (const sockaddr*) &addr, addrlen);
 }
 
-Socket Socket::accept(sockaddr_in &addr, int addrlen)
+Socket Socket::accept(sockaddr_in &addr, socklen_t &addrlen)
 {
     return Socket(::accept(m_var, (sockaddr*) &addr, (socklen_t*) &addrlen));
 }
