@@ -25,7 +25,7 @@ public:
     int send(const void *buf, size_t len, int n);
     int recv(void *buf, size_t len, int n);
     int connect(const sockaddr_in &addr, size_t addrlen);
-    Socket accept(const sockaddr_in &addr, int addrlen);
+    Socket accept(sockaddr_in &addr, int addrlen);
 };
 
 #endif
