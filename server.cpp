@@ -308,7 +308,7 @@ int main(int argc, char* argv[])
     while (true)
     {
         struct sockaddr_in peer;
-        int peerlen = sizeof(peer);
+        socklen_t peerlen = sizeof(peer);
 
         Socket s1 = serverSocket.accept(peer, peerlen);
 
