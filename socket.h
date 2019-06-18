@@ -22,6 +22,7 @@ public:
     Socket& operator = (Socket&& other);
 
     int bind(const std::string &address);
+    int connect(const std::string &address);
 
     int bind(const sockaddr_in &addr, size_t addrlen);
     int listen(int n);
