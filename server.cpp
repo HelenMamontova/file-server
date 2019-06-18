@@ -8,6 +8,7 @@
 #include <sys/types.h> //socket, bind
 #include <sys/socket.h> //socket, bind, accept, listen
 #include <netinet/in.h> //struct sockaddr_in
+#include <linux/in.h> //struct sockaddr_in
 #include <dirent.h> //struct dirent, opendir, readdir, closedir
 #include <errno.h>
 #include <unistd.h> //close
