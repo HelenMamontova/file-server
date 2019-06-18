@@ -55,6 +55,20 @@ int Socket::bind(const std::string &address)
     return 0;
 }
 
+int Socket::connect(const std::string &address)
+{
+    struct sockaddr_in addr;
+
+    if (!setAddress(address, &addr))
+    {
+        std::cout << "Address error.\n";
+        return 1;
+    }
+
+    connect(addr, sizeof(addr));
+    return 0;
+}
+
 int Socket::bind(const sockaddr_in &addr, size_t addrlen)
 {
     return ::bind(m_var, (const sockaddr*) &addr, addrlen);
