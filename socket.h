@@ -3,6 +3,7 @@
 
 #include <netinet/in.h> //struct sockaddr_in
 #include <linux/in.h> //struct sockaddr_in
+#include <string>
 
 class Socket
 {
@@ -19,6 +20,8 @@ public:
 
     Socket(Socket&& other);
     Socket& operator = (Socket&& other);
+
+    int bind(const std::string &address);
 
     int bind(const sockaddr_in &addr, size_t addrlen);
     int listen(int n);
