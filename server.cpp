@@ -293,15 +293,7 @@ int main(int argc, char* argv[])
 
     Socket serverSocket;
 
-    struct sockaddr_in local;
-
-    if (!setAddress(address, &local))
-    {
-        std::cout << "Address error.\n";
-        return 1;
-    }
-
-    serverSocket.bind(local, sizeof(local));
+    serverSocket.bind(address);
 
     serverSocket.listen(5);
 
