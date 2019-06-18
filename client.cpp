@@ -7,7 +7,6 @@
 #include <sys/stat.h> //stat, struct stat
 #include <sys/types.h> //socket, connect
 #include <sys/socket.h> //socket, connect
-#include <netinet/in.h> //struct sockaddr_in
 #include <errno.h>
 
 #include "utils.h"
@@ -309,15 +308,7 @@ int main(int argc, char* argv[])
 
     Socket s;
 
-    struct sockaddr_in peer;
-
-    if (!setAddress(server_address, &peer))
-    {
-        std::cerr << "Address error.\n";
-        return 1;
-    }
-
-    s.connect(peer, sizeof(peer));
+    s.connect(server_address);
 
     if (command == "get")
     {
