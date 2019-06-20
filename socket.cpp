@@ -7,26 +7,26 @@
 #include <unistd.h> //close
 
 Socket::Socket()
-    : m_var(socket(AF_INET, SOCK_STREAM, 0))
+    : m_sock(socket(AF_INET, SOCK_STREAM, 0))
 {
 }
 
 Socket::Socket(int fd)
-    : m_var(fd)
+    : m_sock(fd)
 {
 }
 
 Socket::~Socket()
 {
-    close(m_var);
+    close(m_sock);
 }
 
 // move constructor
 Socket::Socket(Socket&& other)
-    : m_var(0)
+    : m_sock(0)
 {
-    m_var = other.m_var;
-    other.m_var = 0;
+    m_sock = other.m_sock;
+    other.m_sock = 0;
 }
 
 // move asignment operator
@@ -34,8 +34,8 @@ Socket& Socket::operator = (Socket&& other)
 {
     if (this != &other)
     {
-        m_var = other.m_var;
-        other.m_var = 0;
+        m_sock = other.m_sock;
+        other.m_sock = 0;
         return *this;
     }
     return *this;
@@ -71,30 +71,30 @@ int Socket::connect(const std::string &address)
 
 int Socket::bind(const sockaddr_in &addr, size_t addrlen)
 {
-    return ::bind(m_var, (const sockaddr*) &addr, addrlen);
+    return ::bind(m_sock, (const sockaddr*) &addr, addrlen);
 }
 
 int Socket::listen(int n)
 {
-    return ::listen(m_var, n);
+    return ::listen(m_sock, n);
 }
 
 int Socket::send(const void *buf, size_t len, int n)
 {
-    return ::send(m_var, buf, len, n);
+    return ::send(m_sock, buf, len, n);
 }
 
 int Socket::recv(void *buf, size_t len, int n)
 {
-    return ::recv(m_var, buf, len, n);
+    return ::recv(m_sock, buf, len, n);
 }
 
 int Socket::connect(const sockaddr_in &addr, size_t addrlen)
 {
-    return ::connect(m_var, (const sockaddr*) &addr, addrlen);
+    return ::connect(m_sock, (const sockaddr*) &addr, addrlen);
 }
 
 Socket Socket::accept(sockaddr_in &addr, socklen_t &addrlen)
 {
-    return Socket(::accept(m_var, (sockaddr*) &addr, (socklen_t*) &addrlen));
+    return Socket(::accept(m_sock, (sockaddr*) &addr, (socklen_t*) &addrlen));
 }
