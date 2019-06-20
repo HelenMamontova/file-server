@@ -8,7 +8,7 @@
 class Socket
 {
 private:
-    int m_var;
+    int m_sock;
     Socket(const Socket&);
     Socket& operator = (const Socket&);
 
