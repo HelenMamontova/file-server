@@ -1,9 +1,9 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
+#include <string>
 #include <netinet/in.h> //struct sockaddr_in
 #include <linux/in.h> //struct sockaddr_in
-#include <string>
 
 class Socket
 {
