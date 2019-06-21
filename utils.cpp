@@ -5,7 +5,6 @@
 #include <cstring>
 #include <arpa/inet.h> //inet_aton
 
-
 bool setAddress(const std::string& address, struct sockaddr_in* local)
 {
     size_t pos = address.find(":");
