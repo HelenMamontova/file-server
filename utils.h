@@ -1,12 +1,12 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include "socket.h"
+
 #include <string>
+#include <cstdint> //uint8_t, uint32_t
 #include <netinet/in.h> //struct sockaddr_in
 #include <linux/in.h> //struct sockaddr_in
-#include <cstdint> //uint8_t, uint32_t
-
-#include "socket.h"
 
 bool setAddress(const std::string& address, struct sockaddr_in* local);
 int sendString(Socket& sock, const std::string& source);
