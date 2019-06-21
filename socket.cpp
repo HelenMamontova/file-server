@@ -1,7 +1,6 @@
 #include "socket.h"
 #include "utils.h"
 
-#include <iostream>
 #include <sys/types.h> //socket, bind
 #include <sys/socket.h> //socket, bind, accept, listen
 #include <unistd.h> //close
@@ -57,12 +56,10 @@ int Socket::connect(const std::string &address)
     struct sockaddr_in addr;
 
     if (!setAddress(address, &addr))
-    {
-        std::cout << "Address error.\n";
         return 1;
-    }
 
-    connect(addr, sizeof(addr));
+    if (connect(addr, sizeof(addr)))
+        return 1;
     return 0;
 }
 
