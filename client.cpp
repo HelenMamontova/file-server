@@ -1,16 +1,17 @@
+#include "utils.h"
+#include "socket.h"
+
 #include <iostream>
 #include <fstream>
-#include <cstring>
 #include <string>
 #include <vector>
+#include <cstring>
 #include <cstdint> //uint8_t, uint32_t
 #include <sys/stat.h> //stat, struct stat
 #include <sys/types.h> //socket, connect
 #include <sys/socket.h> //socket, connect
 #include <errno.h>
 
-#include "utils.h"
-#include "socket.h"
 
 void reference()
 {
