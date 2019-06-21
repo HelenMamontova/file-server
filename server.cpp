@@ -16,7 +16,6 @@
 #include <errno.h>
 #include <unistd.h> //close
 
-
 void reference()
 {
     std::cout << "Usage:\n";
