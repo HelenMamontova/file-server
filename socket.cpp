@@ -23,9 +23,8 @@ Socket::~Socket()
 
 // move constructor
 Socket::Socket(Socket&& other)
-    : m_sock(0)
+    : m_sock(other.m_sock)
 {
-    m_sock = other.m_sock;
     other.m_sock = 0;
 }
 
