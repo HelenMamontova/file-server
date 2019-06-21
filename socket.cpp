@@ -45,12 +45,10 @@ int Socket::bind(const std::string &address)
     struct sockaddr_in addr;
 
     if (!setAddress(address, &addr))
-    {
-        std::cout << "Address error.\n";
         return 1;
-    }
 
-    bind(addr, sizeof(addr));
+    if (bind(addr, sizeof(addr)))
+        return 1;
     return 0;
 }
 
