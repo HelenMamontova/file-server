@@ -1,9 +1,10 @@
+#include "utils.h"
+
 #include <iostream>
-#include <cstring>
 #include <vector>
+#include <cstring>
 #include <arpa/inet.h> //inet_aton
 
-#include "utils.h"
 
 bool setAddress(const std::string& address, struct sockaddr_in* local)
 {
