@@ -90,5 +90,5 @@ int Socket::connect(const sockaddr_in &addr, size_t addrlen)
 
 Socket Socket::accept(sockaddr_in &addr, socklen_t &addrlen)
 {
-    return Socket(::accept(m_sock, (sockaddr*) &addr, (socklen_t*) &addrlen));
+    return Socket(::accept(m_sock, (sockaddr*) &addr, &addrlen));
 }
