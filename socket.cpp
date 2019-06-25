@@ -47,9 +47,7 @@ int Socket::bind(const std::string &address)
     if (!setAddress(address, &addr))
         return 1;
 
-    if (bind(addr, sizeof(addr)))
-        return 1;
-    return 0;
+    return bind(addr, sizeof(addr));
 }
 
 int Socket::connect(const std::string &address)
@@ -59,9 +57,7 @@ int Socket::connect(const std::string &address)
     if (!setAddress(address, &addr))
         return 1;
 
-    if (connect(addr, sizeof(addr)))
-        return 1;
-    return 0;
+    return connect(addr, sizeof(addr));
 }
 
 int Socket::bind(const sockaddr_in &addr, size_t addrlen)
