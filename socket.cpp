@@ -17,7 +17,8 @@ Socket::Socket(int fd)
 
 Socket::~Socket()
 {
-    close(m_sock);
+    if (m_sock != 0)
+        close(m_sock);
 }
 
 // move constructor
