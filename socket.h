@@ -26,7 +26,7 @@ public:
     int connect(const std::string &address);
 
     int bind(const sockaddr_in &addr, size_t addrlen);
-    int listen(int n);
+    void listen(int n);
     int send(const void *buf, size_t len, int n);
     int recv(void *buf, size_t len, int n);
     int connect(const sockaddr_in &addr, size_t addrlen);
