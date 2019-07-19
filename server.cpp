@@ -292,50 +292,58 @@ int main(int argc, char* argv[])
         }
     }
 
-    Socket serverSocket;
-
-    serverSocket.bind(address);
-
-    serverSocket.listen(5);
-
-    while (true)
+    try
     {
-        struct sockaddr_in peer;
-        socklen_t peerlen = sizeof(peer);
+        Socket serverSocket;
 
-        Socket s1 = serverSocket.accept(peer, peerlen);
+        serverSocket.bind(address);
 
-        uint8_t com;
-        if (receiveUint8(s1, com))
+        serverSocket.listen(5);
+
+        while (true)
         {
-            std::cerr << "Receive com error.\n";
-            return 1;
-        }
+            struct sockaddr_in peer;
+            socklen_t peerlen = sizeof(peer);
 
-        if (com == GET)
-        {
-            if (sendFile(s1, path))
+            Socket s1 = serverSocket.accept(peer, peerlen);
+
+            uint8_t com;
+            if (receiveUint8(s1, com))
             {
-                std::cerr << "Send file error.\n";
+                std::cerr << "Receive com error.\n";
                 return 1;
             }
-        }
-        else if (com == PUT)
-        {
-            if (receiveFile(s1, path))
+
+            if (com == GET)
             {
-                std::cerr << "Receive file error.\n";
-                return 1;
+                if (sendFile(s1, path))
+                {
+                    std::cerr << "Send file error.\n";
+                    return 1;
+                }
+            }
+            else if (com == PUT)
+            {
+                if (receiveFile(s1, path))
+                {
+                    std::cerr << "Receive file error.\n";
+                    return 1;
+                }
+            }
+            else if (com == LIST)
+            {
+                if (sendList(s1, path))
+                {
+                    std::cerr << "Send list error.\n";
+                    return 1;
+                }
             }
         }
-        else if (com == LIST)
-        {
-            if (sendList(s1, path))
-            {
-                std::cerr << "Send list error.\n";
-                return 1;
-            }
-        }
+    }
+
+    catch (const Socket::Error &exception)
+    {
+        std::cerr << "Error: " << exception.what() << "\n";
     }
     return 0;
 }
