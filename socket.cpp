@@ -67,9 +67,10 @@ int Socket::bind(const sockaddr_in &addr, size_t addrlen)
     return ::bind(m_sock, (const sockaddr*) &addr, addrlen);
 }
 
-int Socket::listen(int n)
+void Socket::listen(int n)
 {
-    return ::listen(m_sock, n);
+    if (::listen(m_sock, n))
+        throw Error("Error listen.");
 }
 
 int Socket::send(const void *buf, size_t len, int n)
