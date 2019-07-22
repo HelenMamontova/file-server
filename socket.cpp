@@ -42,14 +42,15 @@ Socket& Socket::operator = (Socket&& other)
     return *this;
 }
 
-int Socket::bind(const std::string &address)
+size_t Socket::bind(const std::string &address)
 {
     struct sockaddr_in addr;
 
     if (!setAddress(address, &addr))
-        return 1;
+        throw Error("Error setAddress.");
 
-    return bind(addr, sizeof(addr));
+    bind(addr, sizeof(addr));
+    return 0;
 }
 
 int Socket::connect(const std::string &address)
@@ -62,9 +63,10 @@ int Socket::connect(const std::string &address)
     return connect(addr, sizeof(addr));
 }
 
-int Socket::bind(const sockaddr_in &addr, size_t addrlen)
+void Socket::bind(const sockaddr_in &addr, size_t addrlen)
 {
-    return ::bind(m_sock, (const sockaddr*) &addr, addrlen);
+    if (::bind(m_sock, (const sockaddr*) &addr, addrlen))
+        throw Error("Error bind.");
 }
 
 void Socket::listen(int n)
