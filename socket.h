@@ -22,10 +22,12 @@ public:
     Socket(Socket&& other);
     Socket& operator = (Socket&& other);
 
-    int bind(const std::string &address);
+    size_t bind(const std::string &address);
+//    int bind(const std::string &address);
     int connect(const std::string &address);
 
-    int bind(const sockaddr_in &addr, size_t addrlen);
+    void bind(const sockaddr_in &addr, size_t addrlen);
+//    int bind(const sockaddr_in &addr, size_t addrlen);
     void listen(int n);
     int send(const void *buf, size_t len, int n);
     int recv(void *buf, size_t len, int n);
