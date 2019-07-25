@@ -37,23 +37,14 @@ bool setAddress(const std::string& address, struct sockaddr_in* local)
     return true;
 }
 
-int sendString(Socket& sock, const std::string& source)
+void sendString(Socket& sock, const std::string& source)
 {
     uint32_t length = source.length();
-    int res = sock.send(&length, sizeof(length), 0);
-    if (res < 0 || res != sizeof(length))
-    {
-        std::cerr << "Cannot send string length. " << strerror(errno) << "\n";
-        return 1;
-    }
+    if (sock.send(&length, sizeof(length), 0) != sizeof(length))
+        throw Socket::Error("Error sendString.");
 
-    res = sock.send(source.c_str(), source.length(), 0);
-    if (res < 0 || res != (int)source.length())
-    {
-        std::cerr << "Cannot send string data. " << strerror(errno) << "\n";
-        return 1;
-    }
-    return 0;
+    if (sock.send(source.c_str(), source.length(), 0) != source.length())
+        throw Socket::Error("Error sendString.");
 }
 
 int receiveString(Socket& sock, std::string& destination)
@@ -77,15 +68,10 @@ int receiveString(Socket& sock, std::string& destination)
     return 0;
 }
 
-int sendUint8(Socket& sock, uint8_t source)
+void sendUint8(Socket& sock, uint8_t source)
 {
-    int res = sock.send(&source, sizeof(source), 0);
-    if (res < 0 || res != sizeof(source))
-    {
-        std::cerr << "Cannot send uint8_t data. " << strerror(errno) << "\n";
-        return 1;
-    }
-    return 0;
+    if (sock.send(&source, sizeof(source), 0) != sizeof(source))
+        throw Socket::Error("Error sendUint8.");
 }
 
 int receiveUint8(Socket& sock, uint8_t& destination)
@@ -99,15 +85,10 @@ int receiveUint8(Socket& sock, uint8_t& destination)
     return 0;
 }
 
-int sendUint32(Socket& sock, uint32_t source)
+void sendUint32(Socket& sock, uint32_t source)
 {
-    int res = sock.send(&source, sizeof(source), 0);
-    if (res < 0 || res != sizeof(source))
-    {
-        std::cerr << "Cannot send uint32_t data. " << strerror(errno) << "\n";
-        return 1;
-    }
-    return 0;
+    if (sock.send(&source, sizeof(source), 0) != sizeof(source))
+        throw Socket::Error("Error sendUint32.");
 }
 
 int receiveUint32(Socket& sock, uint32_t& destination)
