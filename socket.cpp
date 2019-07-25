@@ -80,7 +80,7 @@ size_t Socket::send(const void *buf, size_t len, int n)
     int res = ::send(m_sock, buf, len, n);
     if (res < 0)
         throw Error("Error send.");
-    return (size_t)res;
+    return res;
 }
 
 int Socket::recv(void *buf, size_t len, int n)
