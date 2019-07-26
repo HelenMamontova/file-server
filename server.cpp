@@ -27,32 +27,20 @@ void reference()
     std::cout << "--help, -h - show this text.\n";
 }
 
-int sendError(Socket& s1, std::string error_message)
+void sendError(Socket& s1, std::string error_message)
 {
     // send error code to open file for writing
-    if (sendUint8(s1, ERROR))
-    {
-        std::cerr << "Send command ERROR error.\n";
-        return 1;
-    }
+    sendUint8(s1, ERROR);
 
-    if (sendString(s1, error_message))
-    {
-        std::cerr << "Send string error_message error.\n";
-        return 1;
-    }
-    return 0;
+    sendString(s1, error_message);
 }
 
-int sendList(Socket& s1, const std::string& path)
+void sendList(Socket& s1, const std::string& path)
 {
     // getting file list
     DIR *dir = opendir(path.c_str());
     if (dir == NULL)
-    {
-        std::cerr << "Opendir call error. " << strerror(errno) << "\n";
-        return 1;
-    }
+        throw Socket::Error("Error opendir.");
     std::string list;
 
     for (struct dirent *entry = readdir(dir); entry != NULL; entry = readdir(dir))
@@ -63,19 +51,9 @@ int sendList(Socket& s1, const std::string& path)
     closedir(dir);
 
     // sending code to send file list
-    if (sendUint8(s1, SEND_LIST))
-    {
-        std::cerr << "Send command SEND_LIST error.\n";
-        return 1;
-    }
+    sendUint8(s1, SEND_LIST);
 
-    if (sendString(s1, list))
-    {
-        std::cerr << "Send string list error.\n";
-        return 1;
-    }
-
-    return 0;
+    sendString(s1, list);
 }
 
 int sendFile(Socket& s1, const std::string& path)
@@ -92,45 +70,28 @@ int sendFile(Socket& s1, const std::string& path)
     struct stat st;
     if (stat(path_file.c_str(), &st) < 0)
     {
-        if (sendError(s1, "File does not exists or does not have access."))
-        {
-            std::cerr << "Send error message error.\n";
-            return 1;
-        }
+        sendError(s1, "File does not exists or does not have access.");
 
         std::cerr << "File does not exists or does not have access: " << path_file << "\n";
-        return 1;
     }
 
     // open file
     std::ifstream fin(path_file);
     if (!fin)
     {
-        if (sendError(s1, "File failed to open."))
-        {
-            std::cerr << "Send error message error.\n";
-            return 1;
-        }
+        sendError(s1, "File failed to open.");
+
         std::cerr << path_file << " File not open.\n";
-        return 1;
     }
 
     // send code to send file
-    if (sendUint8(s1, SEND_FILE))
-    {
-        std::cerr << "Send command SEND_FILE error.\n";
-        return 1;
-    }
+    sendUint8(s1, SEND_FILE);
 
     // file length determination
     uint32_t filesize = st.st_size;
 
     // sending file length
-    if (sendUint32(s1, filesize))
-    {
-        std::cerr << "Send file length error.\n";
-        return 1;
-    }
+    sendUint32(s1, filesize);
 
     // read file to buffer
     char buff[1024] = {0};
@@ -140,14 +101,7 @@ int sendFile(Socket& s1, const std::string& path)
 
     // sending buffer contents
         if (fin.gcount() > 0)
-        {
-            int res = s1.send(buff, fin.gcount(), 0);
-            if (res < 0 || res != (int)fin.gcount())
-            {
-                std::cerr << "Send call error buff. " << strerror(errno) << "\n";
-                return 1;
-            }
-        }
+            s1.send(buff, fin.gcount(), 0);
     }
     return 0;
 }
@@ -316,11 +270,7 @@ int main(int argc, char* argv[])
 
             if (com == GET)
             {
-                if (sendFile(s1, path))
-                {
-                    std::cerr << "Send file error.\n";
-                    return 1;
-                }
+                sendFile(s1, path);
             }
             else if (com == PUT)
             {
@@ -332,11 +282,7 @@ int main(int argc, char* argv[])
             }
             else if (com == LIST)
             {
-                if (sendList(s1, path))
-                {
-                    std::cerr << "Send list error.\n";
-                    return 1;
-                }
+                sendList(s1, path);
             }
         }
     }
