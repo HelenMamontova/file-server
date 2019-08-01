@@ -66,15 +66,10 @@ void sendUint8(Socket& sock, uint8_t source)
         throw Socket::Error("Error sendUint8.");
 }
 
-int receiveUint8(Socket& sock, uint8_t& destination)
+void receiveUint8(Socket& sock, uint8_t& destination)
 {
-    int res = sock.recv(&destination, sizeof(destination), 0);
-    if (res < 0 || res != sizeof(destination))
-    {
-        std::cerr << "Cannot receive uint8_t data. " << strerror(errno) << "\n";
-        return 1;
-    }
-    return 0;
+    if (sock.recv(&destination, sizeof(destination), 0) != sizeof(destination))
+        throw Socket::Error("Error receiveUint8: Cannot receive uint8_t data.");
 }
 
 void sendUint32(Socket& sock, uint32_t source)
@@ -83,13 +78,8 @@ void sendUint32(Socket& sock, uint32_t source)
         throw Socket::Error("Error sendUint32.");
 }
 
-int receiveUint32(Socket& sock, uint32_t& destination)
+void receiveUint32(Socket& sock, uint32_t& destination)
 {
-    int res = sock.recv(&destination, sizeof(destination), 0);
-    if (res < 0 || res != sizeof(destination))
-    {
-        std::cerr << "Cannot receive uint32_t data. " << strerror(errno) << "\n";
-        return 1;
-    }
-    return 0;
+    if (sock.recv(&destination, sizeof(destination), 0) != sizeof(destination))
+        throw Socket::Error("Errorr receiveUint32: Cannot receive uint32_t data.");
 }
