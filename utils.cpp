@@ -41,31 +41,23 @@ void sendString(Socket& sock, const std::string& source)
 {
     uint32_t length = source.length();
     if (sock.send(&length, sizeof(length), 0) != sizeof(length))
-        throw Socket::Error("Error sendString.");
+        throw Socket::Error("Error sendString: Cannot send string length.");
 
     if (sock.send(source.c_str(), source.length(), 0) != source.length())
-        throw Socket::Error("Error sendString.");
+        throw Socket::Error("Error sendString: Cannot send string data.");
 }
 
-int receiveString(Socket& sock, std::string& destination)
+void receiveString(Socket& sock, std::string& destination)
 {
     uint32_t length;
-    int res = sock.recv(&length, sizeof(length), 0);
-    if (res < 0 || res != sizeof(length))
-    {
-        std::cerr << "Cannot receive string length. " << strerror(errno) << "\n";
-        return 1;
-    }
+    if (sock.recv(&length, sizeof(length), 0) != sizeof(length))
+        throw Socket::Error("Error receiveString: Cannot receive string length.");
 
     std::vector<char> str(length);
-    res = sock.recv(str.data(), length, 0);
-    if (res < 0 || res != (int)length)
-    {
-        std::cerr << "Cannot receive string data. " << strerror(errno) << "\n";
-        return 1;
-    }
+    if (sock.recv(str.data(), length, 0) != length)
+        throw Socket::Error("Error receiveString: Cannot receive string data.");
+
     destination.assign(str.begin(), str.end());
-    return 0;
 }
 
 void sendUint8(Socket& sock, uint8_t source)
