@@ -10,7 +10,7 @@
 
 bool setAddress(const std::string& address, struct sockaddr_in* local);
 void sendString(Socket& sock, const std::string& source);
-int receiveString(Socket& sock, std::string& destination);
+void receiveString(Socket& sock, std::string& destination);
 void sendUint8(Socket& sock, uint8_t source);
 int receiveUint8(Socket& sock, uint8_t& destination);
 void sendUint32(Socket& sock, uint32_t source);
