@@ -83,9 +83,12 @@ size_t Socket::send(const void *buf, size_t len, int n)
     return res;
 }
 
-int Socket::recv(void *buf, size_t len, int n)
+size_t Socket::recv(void *buf, size_t len, int n)
 {
-    return ::recv(m_sock, buf, len, n);
+    int res = ::recv(m_sock, buf, len, n);
+    if (res < 0)
+        throw Error("Error recv.");
+    return res;
 }
 
 int Socket::connect(const sockaddr_in &addr, size_t addrlen)
