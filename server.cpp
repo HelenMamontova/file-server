@@ -56,14 +56,11 @@ void sendList(Socket& s1, const std::string& path)
     sendString(s1, list);
 }
 
-int sendFile(Socket& s1, const std::string& path)
+void sendFile(Socket& s1, const std::string& path)
 {
     std::string file_name;
-    if (receiveString(s1, file_name))
-    {
-        std::cerr << "Receive string file_name error.\n";
-        return 1;
-    }
+    receiveString(s1, file_name);
+
     std::string path_file = path + "/" + file_name;
 
     // file existence check
@@ -103,73 +100,48 @@ int sendFile(Socket& s1, const std::string& path)
         if (fin.gcount() > 0)
             s1.send(buff, fin.gcount(), 0);
     }
-    return 0;
 }
 
-int receiveFile(Socket& s1, const std::string& path)
+void receiveFile(Socket& s1, const std::string& path)
 {
     std::string file_name;
-    if (receiveString(s1, file_name))
-    {
-        std::cerr << "Receive string file_name error.\n";
-        return 1;
-    }
+    receiveString(s1, file_name);
+
     std::string path_file = path + "/" + file_name;
 
     // file existence check
     struct stat st;
     if (stat(path_file.c_str(), &st) == 0)
     {
-        if (sendError(s1, "Such file already exists."))
-        {
-            std::cerr << "Send error message error.\n";
-            return 1;
-        }
+        sendError(s1, "Such file already exists.");
 
         std::cerr << "Such file already exists: " << path_file << "\n";
-        return 1;
     }
 
     // open file for writing
     std::ofstream fout(path_file);
     if (!fout)
     {
-        if (sendError(s1, "File failed to open."))
-        {
-            std::cerr << "Send error message error.\n";
-            return 1;
-        }
+        sendError(s1, "File failed to open.");
+
         std::cerr << path_file << "File not open.\n";
-        return 1;
     }
 
-    if (sendUint8(s1, SUCCESS))
-    {
-        std::cerr << "Send command SUCCESS error.\n";
-        return 1;
-    }
+    sendUint8(s1, SUCCESS);
 
     // getting file length from client
     uint32_t filesize;
-    if (receiveUint32(s1, filesize))
-    {
-        std::cerr << "Receive file length error.\n";
-        return 1;
-    }
+    receiveUint32(s1, filesize);
 
     // getting buffer contents from client
     size_t bytes_recv = 0;
     int bytes_write = 0;
+
     while (bytes_recv < filesize)
     {
         char buff[1024] = {0};
         int res = s1.recv(buff, sizeof(buff), 0);
         bytes_recv += res;
-        if (res < 0)
-        {
-            std::cerr << "Recv call error buff. " << strerror(errno) << "\n";
-            return 1;
-        }
 
     // write file
         if (!fout.write(buff, res))
@@ -181,20 +153,9 @@ int receiveFile(Socket& s1, const std::string& path)
 
     // send the file write status code
     if (bytes_write < 0)
-    {
-        if (sendError(s1, "File write error."))
-        {
-            std::cerr << "Send error message error.\n";
-            return 1;
-        }
-    }
+        sendError(s1, "File write error.");
 
-    if (sendUint8(s1, SUCCESS))
-    {
-        std::cerr << "Send command SUCCESS error.\n";
-        return 1;
-    }
-    return 0;
+    sendUint8(s1, SUCCESS);
 }
 
 int main(int argc, char* argv[])
@@ -262,11 +223,7 @@ int main(int argc, char* argv[])
             Socket s1 = serverSocket.accept(peer, peerlen);
 
             uint8_t com;
-            if (receiveUint8(s1, com))
-            {
-                std::cerr << "Receive com error.\n";
-                return 1;
-            }
+            receiveUint8(s1, com);
 
             if (com == GET)
             {
@@ -274,11 +231,7 @@ int main(int argc, char* argv[])
             }
             else if (com == PUT)
             {
-                if (receiveFile(s1, path))
-                {
-                    std::cerr << "Receive file error.\n";
-                    return 1;
-                }
+                receiveFile(s1, path);
             }
             else if (com == LIST)
             {
