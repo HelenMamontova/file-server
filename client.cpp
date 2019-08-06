@@ -43,60 +43,36 @@ void receiveList(Socket& s)
     receiveString(s, file_list);
 }
 
-int receiveFile(Socket& s, const std::string& file_name)
+void receiveFile(Socket& s, const std::string& file_name)
 {
-    if (sendUint8(s, GET))
-    {
-        std::cerr << "Send command GET error.\n";
-        return 1;
-    }
+    sendUint8(s, GET);
 
-    if (sendString(s, file_name))
-    {
-        std::cerr << "Send string file_name error.\n";
-        return 1;
-    }
+    sendString(s, file_name);
 
     // getting server response about file existence
     uint8_t response_code;
-    if (receiveUint8(s, response_code))
-    {
-        std::cerr << "Receive response_code error.\n";
-        return 1;
-    }
+    receiveUint8(s, response_code);
 
     if (response_code == ERROR)
     {
         std::string error_message;
-        if (receiveString(s, error_message))
-        {
-            std::cerr << "Receive string error_message error.\n";
-            return 1;
-        }
+        receiveString(s, error_message);
+
         std::cerr << error_message << "\n";
-        return 1;
     }
     else if (response_code != SEND_FILE)
     {
         std::cerr << "Unknown command: " << response_code << "\n";
-        return 1;
     }
 
     // getting file length from server
     uint32_t filesize;
-    if (receiveUint32(s, filesize))
-    {
-        std::cerr << "Receive file length error.\n";
-        return 1;
-    }
+    receiveUint32(s, filesize);
 
     // open file for writing
     std::ofstream fout(file_name);
     if (!fout)
-    {
         std::cerr << file_name << " File not open.\n";
-        return 1;
-    }
 
     // getting buffer contents from server
     size_t bytes_recv = 0;
@@ -104,17 +80,11 @@ int receiveFile(Socket& s, const std::string& file_name)
     {
         char buff[1024] = {0};
         int  res = s.recv(buff, sizeof(buff), 0);
-        if (res < 0)
-        {
-            std::cerr << "Recv call error buff. " << strerror(errno) << "\n";
-            return 1;
-        }
 
     // write file
         fout.write(buff, res);
         bytes_recv += res;
     }
-    return 0;
 }
 
 int sendFile(Socket& s, const std::string& file_name)
