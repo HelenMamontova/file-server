@@ -26,36 +26,21 @@ void reference()
     std::cout << "--help, -h - show this text.\n";
 }
 
-int receiveList(Socket& s)
+void receiveList(Socket& s)
 {
-    if (sendUint8(s, LIST))
-    {
-        std::cerr << "Send command LIST error.\n";
-        return 1;
-    }
+    sendUint8(s, LIST);
 
     // getting command to send the file list from server
     uint8_t response_code;
-    if (receiveUint8(s, response_code))
-    {
-        std::cerr << "Receive response_code error.\n";
-        return 1;
-    }
+    receiveUint8(s, response_code);
 
     if (response_code != SEND_LIST )
     {
         std:: cerr << "Wrong commad to send list." << "\n";
-        return 1;
     }
 
     std::string file_list;
-    if (receiveString(s, file_list))
-    {
-        std::cerr << "Receive string list error.\n";
-        return 1;
-    }
-    std::cout << file_list << "\n";
-    return 0;
+    receiveString(s, file_list);
 }
 
 int receiveFile(Socket& s, const std::string& file_name)
