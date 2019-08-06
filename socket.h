@@ -22,14 +22,14 @@ public:
     Socket(Socket&& other);
     Socket& operator = (Socket&& other);
 
-    size_t bind(const std::string &address);
-    int connect(const std::string &address);
+    void bind(const std::string &address);
+    void connect(const std::string &address);
 
     void bind(const sockaddr_in &addr, size_t addrlen);
     void listen(int n);
     size_t send(const void *buf, size_t len, int n);
     size_t recv(void *buf, size_t len, int n);
-    int connect(const sockaddr_in &addr, size_t addrlen);
+    void connect(const sockaddr_in &addr, size_t addrlen);
     Socket accept(sockaddr_in &addr, socklen_t &addrlen);
 
     class Error: public std::runtime_error
