@@ -307,33 +307,41 @@ int main(int argc, char* argv[])
         }
     }
 
-    Socket s;
-
-    s.connect(server_address);
-
-    if (command == "get")
+    try
     {
-        if (receiveFile(s, file_name))
+        Socket s;
+
+        s.connect(server_address);
+
+        if (command == "get")
         {
-            std::cerr << "Receive file error.\n";
-            return 1;
+            if (receiveFile(s, file_name))
+            {
+                std::cerr << "Receive file error.\n";
+                return 1;
+            }
+        }
+        else if (command == "put")
+        {
+            if (sendFile(s, file_name))
+            {
+                std::cerr << "Send file error.\n";
+                return 1;
+            }
+        }
+        else if (command == "list")
+        {
+            if (receiveList(s))
+            {
+                std::cerr << "Receive list error.\n";
+                return 1;
+            }
         }
     }
-    else if (command == "put")
+
+    catch (const Socket::Error &exception)
     {
-        if (sendFile(s, file_name))
-        {
-            std::cerr << "Send file error.\n";
-            return 1;
-        }
-    }
-    else if (command == "list")
-    {
-        if (receiveList(s))
-        {
-            std::cerr << "Receive list error.\n";
-            return 1;
-        }
+        std::cerr << "Error: " << exception.what() << "\n";
     }
     return 0;
 }
