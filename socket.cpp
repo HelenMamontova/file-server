@@ -42,7 +42,7 @@ Socket& Socket::operator = (Socket&& other)
     return *this;
 }
 
-size_t Socket::bind(const std::string &address)
+void Socket::bind(const std::string &address)
 {
     struct sockaddr_in addr;
 
@@ -50,17 +50,16 @@ size_t Socket::bind(const std::string &address)
         throw Error("Error setAddress.");
 
     bind(addr, sizeof(addr));
-    return 0;
 }
 
-int Socket::connect(const std::string &address)
+void Socket::connect(const std::string &address)
 {
     struct sockaddr_in addr;
 
     if (!setAddress(address, &addr))
-        return 1;
+        throw Error("Connect: Error setAddress.");
 
-    return connect(addr, sizeof(addr));
+    connect(addr, sizeof(addr));
 }
 
 void Socket::bind(const sockaddr_in &addr, size_t addrlen)
@@ -91,12 +90,16 @@ size_t Socket::recv(void *buf, size_t len, int n)
     return res;
 }
 
-int Socket::connect(const sockaddr_in &addr, size_t addrlen)
+void Socket::connect(const sockaddr_in &addr, size_t addrlen)
 {
-    return ::connect(m_sock, (const sockaddr*) &addr, addrlen);
+    if (::connect(m_sock, (const sockaddr*) &addr, addrlen))
+        throw Error("Error connect.");
 }
 
 Socket Socket::accept(sockaddr_in &addr, socklen_t &addrlen)
 {
-    return Socket(::accept(m_sock, (sockaddr*) &addr, &addrlen));
+    int fd = ::accept(m_sock, (sockaddr*) &addr, &addrlen);
+    if (fd == -1)
+        throw Error("Error accept.");
+    return Socket(fd);
 }
