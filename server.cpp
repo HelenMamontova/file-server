@@ -98,7 +98,10 @@ void sendFile(Socket& s1, const std::string& path)
 
     // sending buffer contents
         if (fin.gcount() > 0)
-            s1.send(buff, fin.gcount(), 0);
+        {
+            if (s1.send(buff, fin.gcount(), 0) != (size_t)fin.gcount())
+                std::cerr << "Send call error buff. " << strerror(errno) << "\n";
+        }
     }
 }
 
