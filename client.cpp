@@ -41,6 +41,7 @@ void receiveList(Socket& s)
 
     std::string file_list;
     receiveString(s, file_list);
+    std::cout << file_list << "\n";
 }
 
 void receiveFile(Socket& s, const std::string& file_name)
@@ -87,70 +88,43 @@ void receiveFile(Socket& s, const std::string& file_name)
     }
 }
 
-int sendFile(Socket& s, const std::string& file_name)
+void sendFile(Socket& s, const std::string& file_name)
 {
     struct stat st_buff;
     int res = stat(file_name.c_str(), &st_buff);
     if (res < 0)
-    {
         std::cerr << "Stat call error. " << strerror(errno) << "\n";
-        return 1;
-    }
 
     // open file
     std::ifstream fin(file_name);
     if (!fin)
-    {
         std::cerr << file_name << " File not open.\n";
-        return 1;
-    }
 
     // send file write command
-    if (sendUint8(s, PUT))
-    {
-        std::cerr << "Send command PUT error.\n";
-        return 1;
-    }
+    sendUint8(s, PUT);
 
-    if (sendString(s, file_name))
-    {
-        std::cerr << "Send string file_name error.\n";
-        return 1;
-    }
+    sendString(s, file_name);
 
     // getting permission or prohibition for the file name
     uint8_t response_code;
-    if (receiveUint8(s, response_code))
-    {
-        std::cerr << "Receive response_code error.\n";
-        return 1;
-    }
+    receiveUint8(s, response_code);
 
     if (response_code == ERROR)
     {
         std::string error_message;
-        if (receiveString(s, error_message))
-        {
-            std::cerr << "Receive string error_message error.\n";
-            return 1;
-        }
+        receiveString(s, error_message);
+
         std::cerr << error_message << "\n";
-        return 1;
     }
     else if (response_code != SUCCESS)
     {
         std::cerr << "Unknown command: " << response_code << "\n";
-        return 1;
     }
 
     uint32_t filesize = st_buff.st_size;
 
     // sending file length
-    if (sendUint32(s, filesize))
-    {
-        std::cerr << "Send file length error.\n";
-        return 1;
-    }
+    sendUint32(s, filesize);
 
     // read file to buffer
     char buff[1024] = {0};
@@ -161,40 +135,26 @@ int sendFile(Socket& s, const std::string& file_name)
     // sending buffer contents
         if (fin.gcount() > 0)
         {
-            res = s.send(buff, fin.gcount(), 0);
-            if (res < 0 || res != (int)fin.gcount())
-            {
+            if (s.send(buff, fin.gcount(), 0) != (size_t)fin.gcount())
                 std::cerr << "Send call error buff. " << strerror(errno) << "\n";
-                return 1;
-            }
         }
     }
 
     // getting the file write status code
     uint8_t server_response;
-    if (receiveUint8(s, server_response))
-    {
-        std::cerr << "Receive server_response error.\n";
-        return 1;
-    }
+    receiveUint8(s, server_response);
 
     if (server_response == ERROR)
     {
         std::string error_message;
-        if (receiveString(s, error_message))
-        {
-            std::cerr << "Receive string error_message error.\n";
-            return 1;
-        }
+        receiveString(s, error_message);
+
         std::cerr << error_message << "\n";
-        return 1;
     }
     else if (server_response != SUCCESS)
     {
         std::cerr << "Unknown command: " << server_response << "\n";
-        return 1;
     }
-    return 0;
 }
 
 int main(int argc, char* argv[])
@@ -269,29 +229,11 @@ int main(int argc, char* argv[])
         s.connect(server_address);
 
         if (command == "get")
-        {
-            if (receiveFile(s, file_name))
-            {
-                std::cerr << "Receive file error.\n";
-                return 1;
-            }
-        }
+            receiveFile(s, file_name);
         else if (command == "put")
-        {
-            if (sendFile(s, file_name))
-            {
-                std::cerr << "Send file error.\n";
-                return 1;
-            }
-        }
+            sendFile(s, file_name);
         else if (command == "list")
-        {
-            if (receiveList(s))
-            {
-                std::cerr << "Receive list error.\n";
-                return 1;
-            }
-        }
+            receiveList(s);
     }
 
     catch (const Socket::Error &exception)
