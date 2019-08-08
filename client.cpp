@@ -37,6 +37,7 @@ void receiveList(Socket& s)
     if (response_code != SEND_LIST )
     {
         std:: cerr << "Wrong commad to send list." << "\n";
+        return;
     }
 
     std::string file_list;
@@ -60,10 +61,12 @@ void receiveFile(Socket& s, const std::string& file_name)
         receiveString(s, error_message);
 
         std::cerr << error_message << "\n";
+        return;
     }
     else if (response_code != SEND_FILE)
     {
         std::cerr << "Unknown command: " << response_code << "\n";
+        return;
     }
 
     // getting file length from server
@@ -73,7 +76,10 @@ void receiveFile(Socket& s, const std::string& file_name)
     // open file for writing
     std::ofstream fout(file_name);
     if (!fout)
-        std::cerr << file_name << " File not open.\n";
+    {
+        std::cerr << file_name << " File failed to open.\n";
+        return;
+    }
 
     // getting buffer contents from server
     size_t bytes_recv = 0;
@@ -93,12 +99,18 @@ void sendFile(Socket& s, const std::string& file_name)
     struct stat st_buff;
     int res = stat(file_name.c_str(), &st_buff);
     if (res < 0)
-        std::cerr << "Stat call error. " << strerror(errno) << "\n";
+    {
+        std::cerr << "ile does not exist or does not have access. " << strerror(errno) << "\n";
+        return;
+    }
 
     // open file
     std::ifstream fin(file_name);
     if (!fin)
-        std::cerr << file_name << " File not open.\n";
+    {
+        std::cerr << file_name << " File failed to open.\n";
+        return;
+    }
 
     // send file write command
     sendUint8(s, PUT);
@@ -115,10 +127,12 @@ void sendFile(Socket& s, const std::string& file_name)
         receiveString(s, error_message);
 
         std::cerr << error_message << "\n";
+        return;
     }
     else if (response_code != SUCCESS)
     {
         std::cerr << "Unknown command: " << response_code << "\n";
+        return;
     }
 
     uint32_t filesize = st_buff.st_size;
@@ -136,7 +150,10 @@ void sendFile(Socket& s, const std::string& file_name)
         if (fin.gcount() > 0)
         {
             if (s.send(buff, fin.gcount(), 0) != (size_t)fin.gcount())
-                std::cerr << "Send call error buff. " << strerror(errno) << "\n";
+            {
+                std::cerr << "File failed to send. " << strerror(errno) << "\n";
+                return;
+            }
         }
     }
 
@@ -150,10 +167,12 @@ void sendFile(Socket& s, const std::string& file_name)
         receiveString(s, error_message);
 
         std::cerr << error_message << "\n";
+        return;
     }
     else if (server_response != SUCCESS)
     {
         std::cerr << "Unknown command: " << server_response << "\n";
+        return;
     }
 }
 
