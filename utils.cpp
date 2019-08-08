@@ -63,7 +63,7 @@ void receiveString(Socket& sock, std::string& destination)
 void sendUint8(Socket& sock, uint8_t source)
 {
     if (sock.send(&source, sizeof(source), 0) != sizeof(source))
-        throw Socket::Error("Error sendUint8.");
+        throw Socket::Error("Error sendUint8: Cannot send uint8_t data.");
 }
 
 void receiveUint8(Socket& sock, uint8_t& destination)
@@ -75,7 +75,7 @@ void receiveUint8(Socket& sock, uint8_t& destination)
 void sendUint32(Socket& sock, uint32_t source)
 {
     if (sock.send(&source, sizeof(source), 0) != sizeof(source))
-        throw Socket::Error("Error sendUint32.");
+        throw Socket::Error("Error sendUint32: Cannot send uint32_t data.");
 }
 
 void receiveUint32(Socket& sock, uint32_t& destination)
