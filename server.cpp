@@ -40,7 +40,7 @@ void sendList(Socket& s1, const std::string& path)
     // getting file list
     DIR *dir = opendir(path.c_str());
     if (dir == NULL)
-        throw Socket::Error("Error opendir.");
+        throw Socket::Error("Directory failed to open.");
     std::string list;
 
     for (struct dirent *entry = readdir(dir); entry != NULL; entry = readdir(dir))
@@ -67,18 +67,19 @@ void sendFile(Socket& s1, const std::string& path)
     struct stat st;
     if (stat(path_file.c_str(), &st) < 0)
     {
-        sendError(s1, "File does not exists or does not have access.");
+        sendError(s1, "File does not exist or does not have access.");
 
-        std::cerr << "File does not exists or does not have access: " << path_file << "\n";
+        std::cerr << "File does not exist or does not have access: " << path_file << "\n";
+        return;
     }
 
     // open file
     std::ifstream fin(path_file);
     if (!fin)
-    {
         sendError(s1, "File failed to open.");
 
-        std::cerr << path_file << " File not open.\n";
+        std::cerr << path_file << " File failed to open.\n";
+        return;
     }
 
     // send code to send file
@@ -100,7 +101,10 @@ void sendFile(Socket& s1, const std::string& path)
         if (fin.gcount() > 0)
         {
             if (s1.send(buff, fin.gcount(), 0) != (size_t)fin.gcount())
-                std::cerr << "Send call error buff. " << strerror(errno) << "\n";
+            {
+                std::cerr << "File failed to send. " << strerror(errno) << "\n";
+                return;
+            }
         }
     }
 }
@@ -119,6 +123,7 @@ void receiveFile(Socket& s1, const std::string& path)
         sendError(s1, "Such file already exists.");
 
         std::cerr << "Such file already exists: " << path_file << "\n";
+        return;
     }
 
     // open file for writing
@@ -127,7 +132,8 @@ void receiveFile(Socket& s1, const std::string& path)
     {
         sendError(s1, "File failed to open.");
 
-        std::cerr << path_file << "File not open.\n";
+        std::cerr << path_file << " File failed to open.\n";
+        return;
     }
 
     sendUint8(s1, SUCCESS);
@@ -156,7 +162,12 @@ void receiveFile(Socket& s1, const std::string& path)
 
     // send the file write status code
     if (bytes_write < 0)
-        sendError(s1, "File write error.");
+    {
+        sendError(s1, "File failed to write.");
+
+        std::cerr << path_file << " File failed to write.\n";
+        return;
+    }
 
     sendUint8(s1, SUCCESS);
 }
@@ -229,17 +240,11 @@ int main(int argc, char* argv[])
             receiveUint8(s1, com);
 
             if (com == GET)
-            {
                 sendFile(s1, path);
-            }
             else if (com == PUT)
-            {
                 receiveFile(s1, path);
-            }
             else if (com == LIST)
-            {
                 sendList(s1, path);
-            }
         }
     }
 
