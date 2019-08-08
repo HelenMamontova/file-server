@@ -100,7 +100,7 @@ void sendFile(Socket& s, const std::string& file_name)
     int res = stat(file_name.c_str(), &st_buff);
     if (res < 0)
     {
-        std::cerr << "ile does not exist or does not have access. " << strerror(errno) << "\n";
+        std::cerr << "File does not exist or does not have access. " << strerror(errno) << "\n";
         return;
     }
 
