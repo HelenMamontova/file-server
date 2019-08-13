@@ -32,10 +32,9 @@ public:
     void connect(const sockaddr_in &addr, size_t addrlen);
     Socket accept(sockaddr_in &addr, socklen_t &addrlen);
 
-    class Error: public std::runtime_error
+    struct Error: public std::runtime_error
     {
-    public:
-       explicit Error(std::string error_message) noexcept
+       explicit Error(const std::string& error_message) noexcept
         : runtime_error(error_message)
         {
         }
