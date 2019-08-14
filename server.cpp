@@ -58,8 +58,7 @@ void sendList(Socket& s1, const std::string& path)
 
 void sendFile(Socket& s1, const std::string& path)
 {
-    std::string file_name;
-    receiveString(s1, file_name);
+    std::string file_name = receiveString(s1);
 
     std::string path_file = path + "/" + file_name;
 
@@ -76,6 +75,7 @@ void sendFile(Socket& s1, const std::string& path)
     // open file
     std::ifstream fin(path_file);
     if (!fin)
+    {
         sendError(s1, "File failed to open.");
 
         std::cerr << path_file << " File failed to open.\n";
@@ -111,8 +111,7 @@ void sendFile(Socket& s1, const std::string& path)
 
 void receiveFile(Socket& s1, const std::string& path)
 {
-    std::string file_name;
-    receiveString(s1, file_name);
+    std::string file_name = receiveString(s1);
 
     std::string path_file = path + "/" + file_name;
 
