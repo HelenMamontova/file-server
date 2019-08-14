@@ -114,8 +114,7 @@ void sendFile(Socket& s, const std::string& file_name)
     sendString(s, file_name);
 
     // getting permission or prohibition for the file name
-    uint8_t response_code;
-    receiveUint8(s, response_code);
+    uint8_t response_code = receiveUint8(s);
 
     if (response_code == ERROR)
     {
