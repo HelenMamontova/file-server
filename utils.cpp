@@ -47,7 +47,7 @@ void sendString(Socket& sock, const std::string& source)
         throw Socket::Error("Error sendString: Cannot send string data.");
 }
 
-void receiveString(Socket& sock, std::string& destination)
+std::string receiveString(Socket& sock)
 {
     uint32_t length;
     if (sock.recv(&length, sizeof(length), 0) != sizeof(length))
@@ -57,7 +57,8 @@ void receiveString(Socket& sock, std::string& destination)
     if (sock.recv(str.data(), length, 0) != length)
         throw Socket::Error("Error receiveString: Cannot receive string data.");
 
-    destination.assign(str.begin(), str.end());
+    std::string destination;
+    return destination.assign(str.begin(), str.end());
 }
 
 void sendUint8(Socket& sock, uint8_t source)
