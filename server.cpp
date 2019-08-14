@@ -138,8 +138,7 @@ void receiveFile(Socket& s1, const std::string& path)
     sendUint8(s1, SUCCESS);
 
     // getting file length from client
-    uint32_t filesize;
-    receiveUint32(s1, filesize);
+    uint32_t filesize = receiveUint32(s1);
 
     // getting buffer contents from client
     size_t bytes_recv = 0;
