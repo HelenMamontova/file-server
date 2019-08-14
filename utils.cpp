@@ -67,10 +67,12 @@ void sendUint8(Socket& sock, uint8_t source)
         throw Socket::Error("Error sendUint8: Cannot send uint8_t data.");
 }
 
-void receiveUint8(Socket& sock, uint8_t& destination)
+uint8_t receiveUint8(Socket& sock)
 {
+    uint8_t destination;
     if (sock.recv(&destination, sizeof(destination), 0) != sizeof(destination))
         throw Socket::Error("Error receiveUint8: Cannot receive uint8_t data.");
+    return destination;
 }
 
 void sendUint32(Socket& sock, uint32_t source)
