@@ -40,8 +40,7 @@ void receiveList(Socket& s)
         return;
     }
 
-    std::string file_list;
-    receiveString(s, file_list);
+    std::string file_list = receiveString(s);
     std::cout << file_list << "\n";
 }
 
