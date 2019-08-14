@@ -152,8 +152,7 @@ void sendFile(Socket& s, const std::string& file_name)
     }
 
     // getting the file write status code
-    uint8_t server_response;
-    receiveUint8(s, server_response);
+    uint8_t server_response = receiveUint8(s);
 
     if (server_response == ERROR)
     {
