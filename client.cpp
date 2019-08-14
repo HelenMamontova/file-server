@@ -160,8 +160,7 @@ void sendFile(Socket& s, const std::string& file_name)
 
     if (server_response == ERROR)
     {
-        std::string error_message;
-        receiveString(s, error_message);
+        std::string error_message = receiveString(s);
 
         std::cerr << error_message << "\n";
         return;
