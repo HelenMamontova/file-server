@@ -66,8 +66,7 @@ void receiveFile(Socket& s, const std::string& file_name)
     }
 
     // getting file length from server
-    uint32_t filesize;
-    receiveUint32(s, filesize);
+    uint32_t filesize = receiveUint32(s);
 
     // open file for writing
     std::ofstream fout(file_name);
