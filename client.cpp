@@ -31,8 +31,7 @@ void receiveList(Socket& s)
     sendUint8(s, LIST);
 
     // getting command to send the file list from server
-    uint8_t response_code;
-    receiveUint8(s, response_code);
+    uint8_t response_code = receiveUint8(s);
 
     if (response_code != SEND_LIST )
     {
