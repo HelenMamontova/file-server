@@ -235,8 +235,7 @@ int main(int argc, char* argv[])
 
             Socket s1 = serverSocket.accept(peer, peerlen);
 
-            uint8_t com;
-            receiveUint8(s1, com);
+            uint8_t com = receiveUint8(s1);
 
             if (com == GET)
                 sendFile(s1, path);
