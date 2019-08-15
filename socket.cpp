@@ -48,8 +48,7 @@ void Socket::bind(const std::string &address)
 {
     struct sockaddr_in addr;
 
-    if (!setAddress(address, &addr))
-        throw Error("Bind: Error setAddress.");
+    setAddress(address, &addr);
 
     bind(addr, sizeof(addr));
 }
@@ -58,8 +57,7 @@ void Socket::connect(const std::string &address)
 {
     struct sockaddr_in addr;
 
-    if (!setAddress(address, &addr))
-        throw Error("Connect: Error setAddress.");
+    setAddress(address, &addr);
 
     connect(addr, sizeof(addr));
 }
