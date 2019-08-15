@@ -5,14 +5,12 @@
 #include <cstring>
 #include <arpa/inet.h> //inet_aton
 
-bool setAddress(const std::string& address, struct sockaddr_in* local)
+void setAddress(const std::string& address, struct sockaddr_in* local)
 {
     size_t pos = address.find(":");
     if (!(pos != std::string::npos))
-    {
-        std::cerr << address << " - incorrect address\n";
-        return false;
-    }
+        throw Socket::Error("Error setAddress: Incorrect address: " + address);
+
     std::string ip_address = address.substr(0, pos);
     std::string port = address.substr(pos + 1, address.length() - pos - 1);
 
@@ -20,21 +18,14 @@ bool setAddress(const std::string& address, struct sockaddr_in* local)
     local->sin_family = AF_INET;
 
     if (!inet_aton(ip_address.c_str(), &local->sin_addr))
-    {
-        std::cerr << ip_address << " - unknown host\n";
-        return false;
-    }
+        throw Socket::Error("Error setAddress: Unknown host: " + ip_address);
 
     char* endptr;
     short port_num = strtol(port.c_str(), &endptr, 10);
     if (*endptr != '\0')
-    {
-        std::cerr << port << " - unknown port\n";
-        return false;
-    }
-    local->sin_port = htons(port_num);
+        throw Socket::Error("Error setAddress: Unknown port: " + port);
 
-    return true;
+    local->sin_port = htons(port_num);
 }
 
 void sendString(Socket& sock, const std::string& source)
