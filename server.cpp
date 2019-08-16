@@ -231,17 +231,22 @@ int main(int argc, char* argv[])
         {
             struct sockaddr_in peer;
             socklen_t peerlen = sizeof(peer);
-
             Socket s1 = serverSocket.accept(peer, peerlen);
+            try
+            {
+                uint8_t com = receiveUint8(s1);
 
-            uint8_t com = receiveUint8(s1);
-
-            if (com == GET)
-                sendFile(s1, path);
-            else if (com == PUT)
-                receiveFile(s1, path);
-            else if (com == LIST)
-                sendList(s1, path);
+                if (com == GET)
+                    sendFile(s1, path);
+                else if (com == PUT)
+                    receiveFile(s1, path);
+                else if (com == LIST)
+                    sendList(s1, path);
+            }
+            catch (const Socket::Error &exception)
+            {
+                std::cerr << "Error: " << exception.what() << "\n";
+            }
         }
     }
 
