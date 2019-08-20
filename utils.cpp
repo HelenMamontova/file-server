@@ -1,6 +1,5 @@
 #include "utils.h"
 
-#include <iostream>
 #include <vector>
 #include <cstring>
 #include <arpa/inet.h> //inet_aton
@@ -8,7 +7,7 @@
 void setAddress(const std::string& address, struct sockaddr_in* local)
 {
     size_t pos = address.find(":");
-    if (!(pos != std::string::npos))
+    if (pos == std::string::npos)
         throw Socket::Error("Error setAddress: Incorrect address: " + address);
 
     std::string ip_address = address.substr(0, pos);
