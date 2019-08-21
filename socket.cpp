@@ -1,10 +1,11 @@
 #include "socket.h"
 #include "utils.h"
 
-#include <sys/types.h> //socket, bind
-#include <sys/socket.h> //socket, bind, accept, listen
+#include <vector>
 #include <cstring> //strerror
 #include <cerrno>
+#include <sys/types.h> //socket, bind
+#include <sys/socket.h> //socket, bind, accept, listen
 #include <unistd.h> //close
 
 Socket::Socket()
@@ -102,4 +103,55 @@ Socket Socket::accept(sockaddr_in &addr, socklen_t &addrlen)
     if (fd == -1)
         throw Error("Error accept. " + std::string(strerror(errno)));
     return Socket(fd);
+}
+
+void Socket::sendString(const std::string& source)
+{
+    uint32_t length = source.length();
+    if (send(&length, sizeof(length), 0) != sizeof(length))
+        throw Socket::Error("Error sendString: Cannot send string length.");
+
+    if (send(source.c_str(), source.length(), 0) != source.length())
+        throw Socket::Error("Error sendString: Cannot send string data.");
+}
+
+std::string Socket::receiveString()
+{
+    uint32_t length;
+    if (recv(&length, sizeof(length), 0) != sizeof(length))
+        throw Socket::Error("Error receiveString: Cannot receive string length.");
+
+    std::vector<char> str(length);
+    if (recv(str.data(), length, 0) != length)
+        throw Socket::Error("Error receiveString: Cannot receive string data.");
+    std::string destination;
+    return destination.assign(str.begin(), str.end());
+}
+
+void Socket::sendUint8(uint8_t source)
+{
+    if (send(&source, sizeof(source), 0) != sizeof(source))
+        throw Socket::Error("Error sendUint8: Cannot send uint8_t data.");
+}
+
+uint8_t Socket::receiveUint8()
+{
+    uint8_t destination;
+    if (recv(&destination, sizeof(destination), 0) != sizeof(destination))
+        throw Socket::Error("Error receiveUint8: Cannot receive uint8_t data.");
+    return destination;
+}
+
+void Socket::sendUint32(uint32_t source)
+{
+    if (send(&source, sizeof(source), 0) != sizeof(source))
+        throw Socket::Error("Error sendUint32: Cannot send uint32_t data.");
+}
+
+uint32_t Socket::receiveUint32()
+{
+    uint32_t destination;
+    if (recv(&destination, sizeof(destination), 0) != sizeof(destination))
+        throw Socket::Error("Errorr receiveUint32: Cannot receive uint32_t data.");
+    return destination;
 }
