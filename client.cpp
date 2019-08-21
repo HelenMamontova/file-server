@@ -28,10 +28,10 @@ void reference()
 
 void receiveList(Socket& s)
 {
-    sendUint8(s, LIST);
+    s.sendUint8(LIST);
 
     // getting command to send the file list from server
-    uint8_t response_code = receiveUint8(s);
+    uint8_t response_code = s.receiveUint8();
 
     if (response_code != SEND_LIST )
     {
@@ -39,22 +39,22 @@ void receiveList(Socket& s)
         return;
     }
 
-    std::string file_list = receiveString(s);
+    std::string file_list = s.receiveString();
     std::cout << file_list << "\n";
 }
 
 void receiveFile(Socket& s, const std::string& file_name)
 {
-    sendUint8(s, GET);
+    s.sendUint8(GET);
 
-    sendString(s, file_name);
+    s.sendString(file_name);
 
     // getting server response about file existence
-    uint8_t response_code = receiveUint8(s);
+    uint8_t response_code = s.receiveUint8();
 
     if (response_code == ERROR)
     {
-        std::string error_message = receiveString(s);
+        std::string error_message = s.receiveString();
 
         std::cerr << error_message << "\n";
         return;
@@ -66,7 +66,7 @@ void receiveFile(Socket& s, const std::string& file_name)
     }
 
     // getting file length from server
-    uint32_t filesize = receiveUint32(s);
+    uint32_t filesize = s.receiveUint32();
 
     // open file for writing
     std::ofstream fout(file_name);
@@ -108,16 +108,16 @@ void sendFile(Socket& s, const std::string& file_name)
     }
 
     // send file write command
-    sendUint8(s, PUT);
+    s.sendUint8(PUT);
 
-    sendString(s, file_name);
+    s.sendString(file_name);
 
     // getting permission or prohibition for the file name
-    uint8_t response_code = receiveUint8(s);
+    uint8_t response_code = s.receiveUint8();
 
     if (response_code == ERROR)
     {
-        std::string error_message = receiveString(s);
+        std::string error_message = s.receiveString();
 
         std::cerr << error_message << "\n";
         return;
@@ -131,7 +131,7 @@ void sendFile(Socket& s, const std::string& file_name)
     uint32_t filesize = st_buff.st_size;
 
     // sending file length
-    sendUint32(s, filesize);
+    s.sendUint32(filesize);
 
     // read file to buffer
     char buff[1024] = {0};
@@ -151,11 +151,11 @@ void sendFile(Socket& s, const std::string& file_name)
     }
 
     // getting the file write status code
-    uint8_t server_response = receiveUint8(s);
+    uint8_t server_response = s.receiveUint8();
 
     if (server_response == ERROR)
     {
-        std::string error_message = receiveString(s);
+        std::string error_message = s.receiveString();
 
         std::cerr << error_message << "\n";
         return;
