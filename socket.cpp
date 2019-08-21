@@ -49,7 +49,7 @@ void Socket::bind(const std::string &address)
 {
     struct sockaddr_in addr;
 
-    setAddress(address, &addr);
+    makeAddress(address, &addr);
 
     bind(addr, sizeof(addr));
 }
@@ -58,7 +58,7 @@ void Socket::connect(const std::string &address)
 {
     struct sockaddr_in addr;
 
-    setAddress(address, &addr);
+    makeAddress(address, &addr);
 
     connect(addr, sizeof(addr));
 }
