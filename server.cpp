@@ -30,9 +30,9 @@ void reference()
 void sendError(Socket& s1, std::string error_message)
 {
     // send error code to open file for writing
-    sendUint8(s1, ERROR);
+    s1.sendUint8(ERROR);
 
-    sendString(s1, error_message);
+    s1.sendString(error_message);
 }
 
 void sendList(Socket& s1, const std::string& path)
@@ -51,14 +51,14 @@ void sendList(Socket& s1, const std::string& path)
     closedir(dir);
 
     // sending code to send file list
-    sendUint8(s1, SEND_LIST);
+    s1.sendUint8(SEND_LIST);
 
-    sendString(s1, list);
+    s1.sendString(list);
 }
 
 void sendFile(Socket& s1, const std::string& path)
 {
-    std::string file_name = receiveString(s1);
+    std::string file_name = s1.receiveString();
 
     std::string path_file = path + "/" + file_name;
 
@@ -83,13 +83,13 @@ void sendFile(Socket& s1, const std::string& path)
     }
 
     // send code to send file
-    sendUint8(s1, SEND_FILE);
+    s1.sendUint8(SEND_FILE);
 
     // file length determination
     uint32_t filesize = st.st_size;
 
     // sending file length
-    sendUint32(s1, filesize);
+    s1.sendUint32(filesize);
 
     // read file to buffer
     char buff[1024] = {0};
@@ -111,7 +111,7 @@ void sendFile(Socket& s1, const std::string& path)
 
 void receiveFile(Socket& s1, const std::string& path)
 {
-    std::string file_name = receiveString(s1);
+    std::string file_name = s1.receiveString();
 
     std::string path_file = path + "/" + file_name;
 
@@ -135,10 +135,10 @@ void receiveFile(Socket& s1, const std::string& path)
         return;
     }
 
-    sendUint8(s1, SUCCESS);
+    s1.sendUint8(SUCCESS);
 
     // getting file length from client
-    uint32_t filesize = receiveUint32(s1);
+    uint32_t filesize = s1.receiveUint32();
 
     // getting buffer contents from client
     size_t bytes_recv = 0;
@@ -167,7 +167,7 @@ void receiveFile(Socket& s1, const std::string& path)
         return;
     }
 
-    sendUint8(s1, SUCCESS);
+    s1.sendUint8(SUCCESS);
 }
 
 int main(int argc, char* argv[])
@@ -234,7 +234,7 @@ int main(int argc, char* argv[])
             Socket s1 = serverSocket.accept(peer, peerlen);
             try
             {
-                uint8_t com = receiveUint8(s1);
+                uint8_t com = s1.receiveUint8();
 
                 if (com == GET)
                     sendFile(s1, path);
