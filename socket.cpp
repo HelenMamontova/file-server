@@ -47,18 +47,16 @@ Socket& Socket::operator = (Socket&& other)
 
 void Socket::bind(const std::string &address)
 {
-    struct sockaddr_in addr;
 
-    makeAddress(address, &addr);
+    struct sockaddr_in addr = makeAddress(address);
 
     bind(addr, sizeof(addr));
 }
 
 void Socket::connect(const std::string &address)
 {
-    struct sockaddr_in addr;
 
-    makeAddress(address, &addr);
+    struct sockaddr_in addr = makeAddress(address);
 
     connect(addr, sizeof(addr));
 }
