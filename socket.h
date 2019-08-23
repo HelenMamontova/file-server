@@ -39,6 +39,7 @@ public:
     void sendUint32(uint32_t source);
     uint32_t receiveUint32();
 
+    static sockaddr_in makeAddress(const std::string& address);
 
     struct Error: public std::runtime_error
     {
