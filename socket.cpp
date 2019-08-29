@@ -1,5 +1,4 @@
 #include "socket.h"
-#include "utils.h"
 
 #include <vector>
 #include <cstring> //strerror
@@ -100,18 +99,44 @@ void Socket::listen(int n)
 
 size_t Socket::send(const void *buf, size_t len, int n)
 {
-    int res = ::send(m_sock, buf, len, n);
-    if (res < 0)
-        throw Error("Error send. " + std::string(strerror(errno)));
-    return res;
+    int cnt = len;
+    const char* buffer = static_cast<const char*>(buf);
+    while (cnt > 0)
+    {
+        int res = ::send(m_sock, buffer, cnt, n);
+        if (res < 0)
+        {
+            if (errno == EINTR)
+                continue;
+            throw Error("Error send. " + std::string(strerror(errno)));
+        }
+        if (res == 0)
+            return len - cnt;
+        buffer += res;
+        cnt -= len;
+    }
+    return len;
 }
 
 size_t Socket::recv(void *buf, size_t len, int n)
 {
-    int res = ::recv(m_sock, buf, len, n);
-    if (res < 0)
-        throw Error("Error recv. " + std::string(strerror(errno)));
-    return res;
+    int cnt = len;
+    char* buffer = static_cast<char*>(buf);
+    while (cnt > 0)
+    {
+        int res = ::recv(m_sock, buffer, cnt, n);
+        if (res < 0)
+        {
+            if (errno == EINTR)
+                continue;
+            throw Error("Error recv. " + std::string(strerror(errno)));
+        }
+        if (res == 0)
+            return len - cnt;
+        buffer += res;
+        cnt -= len;
+    }
+    return len;
 }
 
 void Socket::connect(const sockaddr_in &addr, size_t addrlen)
