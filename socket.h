@@ -25,11 +25,11 @@ public:
     void bind(const std::string &address);
     void connect(const std::string &address);
 
-    void bind(const sockaddr_in &addr, size_t addrlen);
+    void bind(const sockaddr_in &addr);
+    void connect(const sockaddr_in &addr);
     void listen(int n);
     size_t send(const void *buf, size_t len, int n);
     size_t recv(void *buf, size_t len, int n);
-    void connect(const sockaddr_in &addr, size_t addrlen);
     Socket accept(sockaddr_in &addr, socklen_t &addrlen);
 
     void sendString(const std::string& source);
