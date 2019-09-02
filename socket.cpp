@@ -74,7 +74,7 @@ void Socket::bind(const std::string &address)
 
     struct sockaddr_in addr = makeAddress(address);
 
-    bind(addr, sizeof(addr));
+    bind(addr);
 }
 
 void Socket::connect(const std::string &address)
@@ -82,13 +82,19 @@ void Socket::connect(const std::string &address)
 
     struct sockaddr_in addr = makeAddress(address);
 
-    connect(addr, sizeof(addr));
+    connect(addr);
 }
 
-void Socket::bind(const sockaddr_in &addr, size_t addrlen)
+void Socket::bind(const sockaddr_in &addr)
 {
-    if (::bind(m_sock, (const sockaddr*) &addr, addrlen))
+    if (::bind(m_sock, (const sockaddr*) &addr, sizeof(addr)))
         throw Error("Error bind. " + std::string(strerror(errno)));
+}
+
+void Socket::connect(const sockaddr_in &addr)
+{
+    if (::connect(m_sock, (const sockaddr*) &addr, sizeof(addr)))
+        throw Error("Error connect. " + std::string(strerror(errno)));
 }
 
 void Socket::listen(int n)
@@ -137,12 +143,6 @@ size_t Socket::recv(void *buf, size_t len, int n)
         cnt -= len;
     }
     return len;
-}
-
-void Socket::connect(const sockaddr_in &addr, size_t addrlen)
-{
-    if (::connect(m_sock, (const sockaddr*) &addr, addrlen))
-        throw Error("Error connect. " + std::string(strerror(errno)));
 }
 
 Socket Socket::accept(sockaddr_in &addr, socklen_t &addrlen)
