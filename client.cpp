@@ -114,9 +114,7 @@ void sendFile(Socket& s, const std::string& file_name)
 
     if (response_code == ERROR)
     {
-        std::string error_message = s.receiveString();
-
-        std::cerr << error_message << "\n";
+        std::cerr << s.receiveString() << "\n";
         return;
     }
     else if (response_code != SUCCESS)
@@ -137,9 +135,10 @@ void sendFile(Socket& s, const std::string& file_name)
         fin.read(buff, 1024);
 
     // sending buffer contents
-        if (fin.gcount() > 0)
+        std::streamsize len = fin.gcount();
+        if (len > 0)
         {
-            if (s.send(buff, fin.gcount(), 0) != (size_t)fin.gcount())
+            if (s.send(buff, len, 0) != (size_t)len)
             {
                 std::cerr << "File failed to send. " << strerror(errno) << "\n";
                 return;
