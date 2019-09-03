@@ -241,7 +241,6 @@ int main(int argc, char* argv[])
         else if (command == "list")
             receiveList(s);
     }
-
     catch (const Socket::Error &exception)
     {
         std::cerr << "Error: " << exception.what() << "\n";
