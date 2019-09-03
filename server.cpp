@@ -248,7 +248,6 @@ int main(int argc, char* argv[])
             }
         }
     }
-
     catch (const Socket::Error &exception)
     {
         std::cerr << "Error: " << exception.what() << "\n";
