@@ -53,9 +53,7 @@ void receiveFile(Socket& s, const std::string& file_name)
 
     if (response_code == ERROR)
     {
-        std::string error_message = s.receiveString();
-
-        std::cerr << error_message << "\n";
+        std::cerr << s.receiveString() << "\n";
         return;
     }
     else if (response_code != SEND_FILE)
