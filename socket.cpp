@@ -201,6 +201,6 @@ uint32_t Socket::receiveUint32()
 {
     uint32_t destination;
     if (recv(&destination, sizeof(destination), 0) != sizeof(destination))
-        throw Socket::Error("Errorr receiveUint32: Cannot receive uint32_t data.");
+        throw Socket::Error("Error receiveUint32: Cannot receive uint32_t data.");
     return destination;
 }
