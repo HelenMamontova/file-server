@@ -30,7 +30,7 @@ public:
     void listen(int n);
     size_t send(const void *buf, size_t len, int n);
     size_t recv(void *buf, size_t len, int n);
-    Socket accept(sockaddr_in &addr, socklen_t &addrlen);
+    Socket accept(sockaddr_in &addr);
 
     void sendString(const std::string& source);
     std::string receiveString();
