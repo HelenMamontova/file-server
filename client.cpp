@@ -30,17 +30,16 @@ void receiveList(Socket& s)
 {
     s.sendUint8(LIST);
 
-    // getting command to send the file list from server
+    // getting comand to send the file list from server
     uint8_t response_code = s.receiveUint8();
 
     if (response_code != SEND_LIST )
     {
-        std:: cerr << "Wrong commad to send list." << "\n";
+        std:: cerr << "Wrong comad to send list: " << response_code << "\n";
         return;
     }
 
-    std::string file_list = s.receiveString();
-    std::cout << file_list << "\n";
+    std::cout << s.receiveString() << "\n";
 }
 
 void receiveFile(Socket& s, const std::string& file_name)
