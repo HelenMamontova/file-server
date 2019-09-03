@@ -145,8 +145,9 @@ size_t Socket::recv(void *buf, size_t len, int n)
     return len;
 }
 
-Socket Socket::accept(sockaddr_in &addr, socklen_t &addrlen)
+Socket Socket::accept(sockaddr_in &addr)
 {
+    socklen_t addrlen = sizeof(addr);
     int fd = ::accept(m_sock, (sockaddr*) &addr, &addrlen);
     if (fd == -1)
         throw Error("Error accept. " + std::string(strerror(errno)));
