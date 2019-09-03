@@ -230,8 +230,7 @@ int main(int argc, char* argv[])
         while (true)
         {
             struct sockaddr_in peer;
-            socklen_t peerlen = sizeof(peer);
-            Socket s1 = serverSocket.accept(peer, peerlen);
+            Socket s1 = serverSocket.accept(peer);
             try
             {
                 uint8_t com = s1.receiveUint8();
