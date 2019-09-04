@@ -143,7 +143,6 @@ void receiveFile(Socket& s1, const std::string& path)
 
     // getting buffer contents from client
     size_t bytes_recv = 0;
-    int bytes_write = 0;
 
     while (bytes_recv < filesize)
     {
@@ -154,20 +153,12 @@ void receiveFile(Socket& s1, const std::string& path)
     // write file
         if (!fout.write(buff, res))
         {
-            bytes_write = -1;
-            break;
+            sendError(s1, "File failed to write.");
+
+            std::cerr << path_file << " File failed to write.\n";
+            return;
         }
     }
-
-    // send the file write status code
-    if (bytes_write < 0)
-    {
-        sendError(s1, "File failed to write.");
-
-        std::cerr << path_file << " File failed to write.\n";
-        return;
-    }
-
     s1.sendUint8(SUCCESS);
 }
 
