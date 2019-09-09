@@ -71,18 +71,12 @@ sockaddr_in Socket::makeAddress(const std::string& address)
 
 void Socket::bind(const std::string &address)
 {
-
-    struct sockaddr_in addr = makeAddress(address);
-
-    bind(addr);
+    bind(makeAddress(address));
 }
 
 void Socket::connect(const std::string &address)
 {
-
-    struct sockaddr_in addr = makeAddress(address);
-
-    connect(addr);
+    connect(makeAddress(address));
 }
 
 void Socket::bind(const sockaddr_in &addr)
