@@ -97,7 +97,7 @@ void Socket::listen(int n)
         throw Error("Error listen. " + std::string(strerror(errno)));
 }
 
-size_t Socket::send(const void *buf, size_t len, int n)
+void Socket::send(const void *buf, size_t len, int n)
 {
     int cnt = len;
     const char* buffer = static_cast<const char*>(buf);
@@ -110,12 +110,9 @@ size_t Socket::send(const void *buf, size_t len, int n)
                 continue;
             throw Error("Error send. " + std::string(strerror(errno)));
         }
-        if (res == 0)
-            return len - cnt;
         buffer += res;
-        cnt -= len;
+        cnt -= res;
     }
-    return len;
 }
 
 size_t Socket::recv(void *buf, size_t len, int n)
