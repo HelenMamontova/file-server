@@ -28,7 +28,7 @@ public:
     void bind(const sockaddr_in &addr);
     void connect(const sockaddr_in &addr);
     void listen(int n);
-    size_t send(const void *buf, size_t len, int n);
+    void send(const void *buf, size_t len, int n);
     size_t recv(void *buf, size_t len, int n);
     Socket accept(sockaddr_in &addr);
 
