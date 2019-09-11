@@ -115,7 +115,7 @@ void Socket::send(const void *buf, size_t len, int n)
     }
 }
 
-size_t Socket::recv(void *buf, size_t len, int n)
+void Socket::recv(void *buf, size_t len, int n)
 {
     int cnt = len;
     char* buffer = static_cast<char*>(buf);
@@ -128,12 +128,9 @@ size_t Socket::recv(void *buf, size_t len, int n)
                 continue;
             throw Error("Error recv. " + std::string(strerror(errno)));
         }
-        if (res == 0)
-            return len - cnt;
         buffer += res;
-        cnt -= len;
+        cnt -= res;
     }
-    return len;
 }
 
 Socket Socket::accept(sockaddr_in &addr)
