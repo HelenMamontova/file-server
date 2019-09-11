@@ -100,13 +100,7 @@ void sendFile(Socket& s1, const std::string& path)
     // sending buffer contents
         std::streamsize len = fin.gcount();
         if (len > 0)
-        {
-            if (s1.send(buff, len, 0) != (size_t)len)
-            {
-                std::cerr << "File failed to send. " << strerror(errno) << "\n";
-                return;
-            }
-        }
+            s1.send(buff, len, 0);
     }
 }
 
