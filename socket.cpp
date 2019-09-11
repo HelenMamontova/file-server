@@ -152,12 +152,11 @@ void Socket::sendString(const std::string& source)
 std::string Socket::receiveString()
 {
     uint32_t length;
-    if (recv(&length, sizeof(length), 0) != sizeof(length))
-        throw Socket::Error("Error receiveString: Cannot receive string length.");
+    recv(&length, sizeof(length), 0);
 
     std::vector<char> str(length);
-    if (recv(str.data(), length, 0) != length)
-        throw Socket::Error("Error receiveString: Cannot receive string data.");
+    recv(str.data(), length, 0);
+
     std::string destination;
     return destination.assign(str.begin(), str.end());
 }
@@ -170,8 +169,7 @@ void Socket::sendUint8(uint8_t source)
 uint8_t Socket::receiveUint8()
 {
     uint8_t destination;
-    if (recv(&destination, sizeof(destination), 0) != sizeof(destination))
-        throw Socket::Error("Error receiveUint8: Cannot receive uint8_t data.");
+    recv(&destination, sizeof(destination), 0);
     return destination;
 }
 
@@ -183,7 +181,6 @@ void Socket::sendUint32(uint32_t source)
 uint32_t Socket::receiveUint32()
 {
     uint32_t destination;
-    if (recv(&destination, sizeof(destination), 0) != sizeof(destination))
-        throw Socket::Error("Error receiveUint32: Cannot receive uint32_t data.");
+    recv(&destination, sizeof(destination), 0);
     return destination;
 }
