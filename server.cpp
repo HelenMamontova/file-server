@@ -141,11 +141,12 @@ void receiveFile(Socket& s1, const std::string& path)
     while (bytes_recv < filesize)
     {
         char buff[1024] = {0};
-        int res = s1.recv(buff, sizeof(buff), 0);
-        bytes_recv += res;
+        s1.recv(buff, sizeof(buff), 0);
+        size_t len = sizeof(buff);
+        bytes_recv += len;
 
     // write file
-        if (!fout.write(buff, res))
+        if (!fout.write(buff, len))
         {
             sendError(s1, "File failed to write.");
 
