@@ -56,7 +56,7 @@ void receiveFile(Socket& s, const std::string& file_name)
         std::cerr << s.receiveString() << "\n";
         return;
     }
-    else if (response_code != SEND_FILE)
+    if (response_code != SEND_FILE)
     {
         std::cerr << "Unknown command: " << response_code << "\n";
         return;
@@ -118,7 +118,7 @@ void sendFile(Socket& s, const std::string& file_name)
         std::cerr << s.receiveString() << "\n";
         return;
     }
-    else if (response_code != SUCCESS)
+    if (response_code != SUCCESS)
     {
         std::cerr << "Unknown command: " << response_code << "\n";
         return;
@@ -151,7 +151,7 @@ void sendFile(Socket& s, const std::string& file_name)
         std::cerr << error_message << "\n";
         return;
     }
-    else if (server_response != SUCCESS)
+    if (server_response != SUCCESS)
     {
         std::cerr << "Unknown command: " << server_response << "\n";
         return;
