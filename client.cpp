@@ -78,11 +78,12 @@ void receiveFile(Socket& s, const std::string& file_name)
     while (bytes_recv < filesize)
     {
         char buff[1024] = {0};
-        int  res = s.recv(buff, sizeof(buff), 0);
+        s.recv(buff, sizeof(buff), 0);
+        size_t len = sizeof(buff);
 
     // write file
-        fout.write(buff, res);
-        bytes_recv += res;
+        fout.write(buff, len);
+        bytes_recv += len;
     }
 }
 
