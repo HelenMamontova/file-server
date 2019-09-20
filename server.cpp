@@ -141,12 +141,10 @@ void receiveFile(Socket& s1, const std::string& path)
     while (bytes_recv < filesize)
     {
         char buff[1024] = {0};
-        size_t len = 0;
+        size_t len = filesize - bytes_recv;
 
-        if ((filesize - bytes_recv) >= sizeof(buff))
+        if (len > sizeof(buff))
             len = sizeof(buff);
-        else
-            len = filesize - bytes_recv;
 
         s1.recv(buff, len, 0);
         bytes_recv += len;
