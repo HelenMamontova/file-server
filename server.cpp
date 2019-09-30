@@ -30,7 +30,7 @@ void reference()
 void sendError(Socket& s1, std::string error_message)
 {
     // send error code to open file for writing
-    s1.sendUint8(ERROR);
+    s1.send<uint8_t>(ERROR);
 
     s1.sendString(error_message);
 }
@@ -51,7 +51,7 @@ void sendList(Socket& s1, const std::string& path)
     closedir(dir);
 
     // sending code to send file list
-    s1.sendUint8(SEND_LIST);
+    s1.send<uint8_t>(SEND_LIST);
 
     s1.sendString(list);
 }
@@ -83,13 +83,13 @@ void sendFile(Socket& s1, const std::string& path)
     }
 
     // send code to send file
-    s1.sendUint8(SEND_FILE);
+    s1.send<uint8_t>(SEND_FILE);
 
     // file length determination
     uint32_t filesize = st.st_size;
 
     // sending file length
-    s1.sendUint32(filesize);
+    s1.send(filesize);
 
     // read file to buffer
     char buff[1024] = {0};
@@ -130,7 +130,7 @@ void receiveFile(Socket& s1, const std::string& path)
         return;
     }
 
-    s1.sendUint8(SUCCESS);
+    s1.send<uint8_t>(SUCCESS);
 
     // getting file length from client
     uint32_t filesize = s1.receiveUint32();
@@ -158,7 +158,7 @@ void receiveFile(Socket& s1, const std::string& path)
             return;
         }
     }
-    s1.sendUint8(SUCCESS);
+    s1.send<uint8_t>(SUCCESS);
 }
 
 int main(int argc, char* argv[])
