@@ -34,9 +34,13 @@ public:
 
     void sendString(const std::string& source);
     std::string receiveString();
-    void sendUint8(uint8_t source);
+    template <typename T>
+    void send(T source)
+    {
+        send(&source, sizeof(source), 0);
+    }
+
     uint8_t receiveUint8();
-    void sendUint32(uint32_t source);
     uint32_t receiveUint32();
 
     static sockaddr_in makeAddress(const std::string& address);
