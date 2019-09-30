@@ -161,21 +161,11 @@ std::string Socket::receiveString()
     return destination.assign(str.begin(), str.end());
 }
 
-void Socket::sendUint8(uint8_t source)
-{
-    send(&source, sizeof(source), 0);
-}
-
 uint8_t Socket::receiveUint8()
 {
     uint8_t destination;
     recv(&destination, sizeof(destination), 0);
     return destination;
-}
-
-void Socket::sendUint32(uint32_t source)
-{
-    send(&source, sizeof(source), 0);
 }
 
 uint32_t Socket::receiveUint32()
