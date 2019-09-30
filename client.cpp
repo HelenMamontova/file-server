@@ -28,7 +28,7 @@ void reference()
 
 void receiveList(Socket& s)
 {
-    s.sendUint8(LIST);
+    s.send<uint8_t>(LIST);
 
     // getting comand to send the file list from server
     uint8_t response_code = s.receiveUint8();
@@ -44,7 +44,7 @@ void receiveList(Socket& s)
 
 void receiveFile(Socket& s, const std::string& file_name)
 {
-    s.sendUint8(GET);
+    s.send<uint8_t>(GET);
 
     s.sendString(file_name);
 
@@ -110,7 +110,7 @@ void sendFile(Socket& s, const std::string& file_name)
     }
 
     // send file write command
-    s.sendUint8(PUT);
+    s.send<uint8_t>(PUT);
 
     s.sendString(file_name);
 
@@ -131,7 +131,7 @@ void sendFile(Socket& s, const std::string& file_name)
     uint32_t filesize = st_buff.st_size;
 
     // sending file length
-    s.sendUint32(filesize);
+    s.send(filesize);
 
     // read file to buffer
     char buff[1024] = {0};
