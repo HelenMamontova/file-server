@@ -40,8 +40,13 @@ public:
         send(&source, sizeof(source), 0);
     }
 
-    uint8_t receiveUint8();
-    uint32_t receiveUint32();
+    template <typename T>
+    T receive()
+    {
+        T destination;
+        recv(&destination, sizeof(destination), 0);
+        return destination;
+    }
 
     static sockaddr_in makeAddress(const std::string& address);
 
