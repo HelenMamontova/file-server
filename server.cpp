@@ -133,7 +133,7 @@ void receiveFile(Socket& s1, const std::string& path)
     s1.send<uint8_t>(SUCCESS);
 
     // getting file length from client
-    uint32_t filesize = s1.receiveUint32();
+    uint32_t filesize = s1.receive<uint32_t>();
 
     // getting buffer contents from client
     size_t bytes_recv = 0;
@@ -224,7 +224,7 @@ int main(int argc, char* argv[])
             Socket s1 = serverSocket.accept(peer);
             try
             {
-                uint8_t com = s1.receiveUint8();
+                uint8_t com = s1.receive<uint8_t>();
 
                 if (com == GET)
                     sendFile(s1, path);
