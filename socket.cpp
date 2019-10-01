@@ -145,14 +145,13 @@ Socket Socket::accept(sockaddr_in &addr)
 void Socket::sendString(const std::string& source)
 {
     uint32_t length = source.length();
-    send(&length, sizeof(length), 0);
+    send(length);
     send(source.c_str(), source.length(), 0);
 }
 
 std::string Socket::receiveString()
 {
-    uint32_t length;
-    recv(&length, sizeof(length), 0);
+    uint32_t length = receive<uint32_t>();
 
     std::vector<char> str(length);
     recv(str.data(), length, 0);
