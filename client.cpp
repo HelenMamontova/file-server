@@ -128,10 +128,8 @@ void sendFile(Socket& s, const std::string& file_name)
         return;
     }
 
-    uint32_t filesize = st_buff.st_size;
-
     // sending file length
-    s.send(filesize);
+    s.send<uint32_t>(st_buff.st_size);
 
     // read file to buffer
     char buff[1024] = {0};
