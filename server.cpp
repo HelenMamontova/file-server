@@ -85,11 +85,8 @@ void sendFile(Socket& s1, const std::string& path)
     // send code to send file
     s1.send<uint8_t>(SEND_FILE);
 
-    // file length determination
-    uint32_t filesize = st.st_size;
-
     // sending file length
-    s1.send(filesize);
+    s1.send<uint32_t>(st.st_size);
 
     // read file to buffer
     char buff[1024] = {0};
