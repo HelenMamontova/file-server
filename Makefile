@@ -1,4 +1,4 @@
-CXXFLAGS = -c -W -Wall -Wextra -std=c++11
+CXXFLAGS = -W -Wall -Wextra -std=c++11
 
 all: server client
 
@@ -6,16 +6,16 @@ server: server.o socket.o
 	$(CXX) $< socket.o -o $@
 
 server.o: server.cpp
-	$(CXX) $(CXXFLAGS) $< -o $@
+	$(CXX) -c $(CXXFLAGS) $< -o $@
 
 socket.o: socket.cpp
-	$(CXX) $(CXXFLAGS) $< -o $@
+	$(CXX) -c $(CXXFLAGS) $< -o $@
 
 client: client.o socket.o
 	$(CXX) $< socket.o -o $@
 
 client.o: client.cpp
-	$(CXX) $(CXXFLAGS) $< -o $@
+	$(CXX) -c $(CXXFLAGS) $< -o $@
 
 clean:
 	rm server.o server socket.o client.o client
