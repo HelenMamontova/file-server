@@ -1,5 +1,9 @@
 CXXFLAGS = -W -Wall -Wextra -std=c++11
 
+SOURCES = server.cpp \
+		  client.cpp \
+		  socket.cpp
+
 .PHONY: all clean
 
 all: server client
@@ -14,4 +18,13 @@ client: client.o socket.o
 	$(CXX) $< socket.o -o $@
 
 clean:
-	rm server.o server socket.o client.o client
+	rm *.o *.d server client
+
+ifneq ($(MAKECMDGOALS),distclean)
+ifneq ($(MAKECMDGOALS),clean)
+-include $(subst .cpp,.d,$(SOURCES))
+endif
+endif
+
+%.d: %.cpp
+	@$(CXX) -MM $(CXXFLAGS) $< > $@
