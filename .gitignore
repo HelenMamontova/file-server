@@ -4,3 +4,4 @@ client
 server_files
 *.txt
 *.o
+*.d
