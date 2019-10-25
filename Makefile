@@ -11,9 +11,6 @@ all: server client
 server: server.o socket.o
 	$(CXX) $< socket.o -o $@
 
-%.o: %.cpp
-	$(CXX) -c $(CXXFLAGS) $< -o $@
-
 client: client.o socket.o
 	$(CXX) $< socket.o -o $@
 
